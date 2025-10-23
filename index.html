@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Centro Redirección</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Orbitron', sans-serif;
+  }
+
+  body {
+    background: radial-gradient(circle at center, #050505 0%, #000 100%);
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #00ffff;
+    text-shadow: 0 0 15px #00ffff;
+  }
+
+  h1 {
+    font-size: 3em;
+    letter-spacing: 3px;
+    text-align: center;
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes glow {
+    from { text-shadow: 0 0 10px #00ffff; color: #00ffff; }
+    to { text-shadow: 0 0 25px #ff00ff; color: #ff00ff; }
+  }
+
+  .buttons {
+    display: flex;
+    gap: 50px;
+    margin-top: 60px;
+  }
+
+  button {
+    background: none;
+    border: 2px solid #00ffff;
+    color: #00ffff;
+    padding: 15px 40px;
+    font-size: 1.2em;
+    border-radius: 50px;
+    cursor: pointer;
+    position: relative;
+    transition: 0.3s;
+    text-transform: uppercase;
+  }
+
+  button:hover {
+    color: #fff;
+    background: linear-gradient(90deg, #00ffff, #ff00ff);
+    box-shadow: 0 0 20px #00ffff, 0 0 40px #ff00ff;
+    transform: scale(1.1);
+  }
+
+  /* Efecto de partículas */
+  .particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: -1;
+  }
+
+  .particle {
+    position: absolute;
+    background: rgba(0, 255, 255, 0.7);
+    border-radius: 50%;
+    animation: float 10s infinite;
+  }
+
+  @keyframes float {
+    0% {
+      transform: translateY(100vh) scale(0);
+      opacity: 0.5;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-10vh) scale(1);
+      opacity: 0;
+    }
+  }
+
+  footer {
+    position: absolute;
+    bottom: 20px;
+    font-size: 0.9em;
+    color: #666;
+  }
+</style>
+</head>
+<body>
+
+<div class="particles"></div>
+
+<h1>🪩 Bienvenido al Portal 🪩</h1>
+<div class="buttons">
+  <button onclick="redirigir('css_CHATGPT.html')">Ir a ChatGPT</button>
+  <button onclick="redirigir('css_MAGICLOOPS.html')">Ir a Magic Loops</button>
+</div>
+
+<footer>© 2025 | Sistema de Portales Avanzado</footer>
+
+<script>
+  // Crear partículas dinámicamente
+  const particlesContainer = document.querySelector('.particles');
+  for (let i = 0; i < 60; i++) {
+    const p = document.createElement('div');
+    p.classList.add('particle');
+    p.style.width = `${Math.random() * 5 + 2}px`;
+    p.style.height = p.style.width;
+    p.style.left = `${Math.random() * 100}%`;
+    p.style.animationDuration = `${5 + Math.random() * 10}s`;
+    p.style.animationDelay = `${Math.random() * 5}s`;
+    particlesContainer.appendChild(p);
+  }
+
+  // Función de redirección con efecto
+  function redirigir(url) {
+    document.body.style.transition = 'all 1s ease';
+    document.body.style.opacity = '0';
+    setTimeout(() => {
+      window.location.href = url;
+    }, 1000);
+  }
+</script>
+
+</body>
+</html>

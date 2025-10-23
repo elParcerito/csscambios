@@ -1,0 +1,1457 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tutorial Interactivo de CSS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta property="og:title" content="Tutorial Interactivo de CSS">
+  <meta property="og:description" content="Built with Magic Loops">
+  <meta property="og:image" content="https://magicloops.dev/images/preview.png">
+  <meta property="og:url" content="https://jnd0l.magicloops.app">
+  <meta name="twitter:card" content="https://magicloops.dev/images/preview.png">
+  <style>
+    body {
+      margin: 0; padding: 0;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+    iframe {
+      border: none;
+      width: 100%;
+      height: 100vh;
+    }
+    .hidden-iframe {
+      display: none; /* keep hidden for silent refresh */
+      width: 0; height: 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- 
+    The main application content is in an <iframe> 
+    with user-generated HTML (appData.html).
+  -->
+  <iframe 
+    srcdoc='&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;es&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;utf-8&quot;&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+  &lt;title&gt;Tutorial Interactivo de CSS&lt;/title&gt;
+  &lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css&quot;&gt;
+  &lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css&quot;&gt;
+  &lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css&quot;&gt;
+  &lt;script src=&quot;https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js&quot;&gt;&lt;/script&gt;
+  &lt;style id=&quot;app-style&quot;&gt;
+    :root {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --text-primary: #334155;
+      --text-secondary: #64748b;
+      --accent: #3b82f6;
+      --border-color: #e2e8f0;
+      --shadow-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .dark-mode {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --accent: #60a5fa;
+      --border-color: #334155;
+      --shadow-color: rgba(0, 0, 0, 0.3);
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      transition: all 0.3s ease;
+    }
+
+    .card {
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 6px var(--shadow-color);
+    }
+
+    .control-panel {
+      background-color: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .tab {
+      cursor: pointer;
+      padding: 0.5rem 1rem;
+      border-bottom: 2px solid transparent;
+    }
+
+    .tab.active {
+      border-bottom: 2px solid var(--accent);
+      color: var(--accent);
+    }
+
+    input[type=&quot;range&quot;] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 5px;
+      border-radius: 5px;
+      background: var(--border-color);
+      outline: none;
+    }
+
+    input[type=&quot;range&quot;]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+    }
+
+    select, input[type=&quot;text&quot;], input[type=&quot;number&quot;] {
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 0.375rem 0.75rem;
+      border-radius: 0.25rem;
+    }
+
+    .preview-element {
+      transition: all 0.3s ease;
+    }
+
+    .code-block {
+      position: relative;
+      border-radius: 0.5rem;
+      overflow: hidden;
+      background-color: #1e1e1e;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      z-index: 10;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateY(-20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.7;
+      }
+    }
+
+    .copied-message {
+      animation: fadeIn 0.3s, fadeOut 0.5s 1.5s forwards;
+    }
+
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+      }
+    }
+
+    .animation-controls {
+      display: none;
+    }
+
+    .animation-controls.active {
+      display: block;
+    }
+
+    .control-section {
+      display: none;
+    }
+
+    .control-section.active {
+      display: block;
+      animation: slideIn 0.3s ease;
+    }
+    
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--text-secondary);
+      transition: .4s;
+      border-radius: 24px;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: &quot;&quot;;
+      height: 16px;
+      width: 16px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .toggle-slider {
+      background-color: var(--accent);
+    }
+
+    input:checked + .toggle-slider:before {
+      transform: translateX(26px);
+    }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class=&quot;min-h-screen flex flex-col&quot;&gt;
+    &lt;!-- Header and controls --&gt;
+    &lt;header class=&quot;control-panel sticky top-0 z-10 p-4&quot;&gt;
+      &lt;div class=&quot;container mx-auto&quot;&gt;
+        &lt;div class=&quot;flex justify-between items-center mb-4&quot;&gt;
+          &lt;h1 class=&quot;text-2xl font-bold&quot;&gt;Tutorial Interactivo de CSS&lt;/h1&gt;
+          &lt;div class=&quot;flex items-center&quot;&gt;
+            &lt;span class=&quot;mr-2 text-sm&quot;&gt;&lt;i class=&quot;far fa-moon&quot;&gt;&lt;/i&gt;&lt;/span&gt;
+            &lt;label class=&quot;toggle-switch&quot;&gt;
+              &lt;input type=&quot;checkbox&quot; id=&quot;darkModeToggle&quot;&gt;
+              &lt;span class=&quot;toggle-slider&quot;&gt;&lt;/span&gt;
+            &lt;/label&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;!-- Control Tabs --&gt;
+        &lt;div class=&quot;flex flex-wrap border-b border-gray-200 mb-4&quot;&gt;
+          &lt;div class=&quot;tab active&quot; data-tab=&quot;basic&quot;&gt;Básico&lt;/div&gt;
+          &lt;div class=&quot;tab&quot; data-tab=&quot;spacing&quot;&gt;Espaciado&lt;/div&gt;
+          &lt;div class=&quot;tab&quot; data-tab=&quot;typography&quot;&gt;Tipografía&lt;/div&gt;
+          &lt;div class=&quot;tab&quot; data-tab=&quot;borders&quot;&gt;Bordes&lt;/div&gt;
+          &lt;div class=&quot;tab&quot; data-tab=&quot;effects&quot;&gt;Efectos&lt;/div&gt;
+          &lt;div class=&quot;tab&quot; data-tab=&quot;transform&quot;&gt;Transformaciones&lt;/div&gt;
+          &lt;div class=&quot;tab&quot; data-tab=&quot;animation&quot;&gt;Animaciones&lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;!-- Control Panels --&gt;
+        &lt;div id=&quot;controls&quot; class=&quot;mb-4&quot;&gt;
+          &lt;!-- Basic Controls --&gt;
+          &lt;div class=&quot;control-section active&quot; id=&quot;basic-controls&quot;&gt;
+            &lt;div class=&quot;grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4&quot;&gt;
+              &lt;div&gt;
+                &lt;label class=&quot;block mb-1&quot;&gt;Display&lt;/label&gt;
+                &lt;select id=&quot;display&quot; class=&quot;w-full&quot;&gt;
+                  &lt;option value=&quot;block&quot;&gt;block&lt;/option&gt;
+                  &lt;option value=&quot;inline&quot;&gt;inline&lt;/option&gt;
+                  &lt;option value=&quot;inline-block&quot;&gt;inline-block&lt;/option&gt;
+                  &lt;option value=&quot;flex&quot;&gt;flex&lt;/option&gt;
+                  &lt;option value=&quot;grid&quot;&gt;grid&lt;/option&gt;
+                  &lt;option value=&quot;none&quot;&gt;none&lt;/option&gt;
+                &lt;/select&gt;
+              &lt;/div&gt;
+              &lt;div&gt;
+                &lt;label class=&quot;block mb-1&quot;&gt;Width&lt;/label&gt;
+                &lt;div class=&quot;flex&quot;&gt;
+                  &lt;input type=&quot;range&quot; min=&quot;10&quot; max=&quot;100&quot; value=&quot;50&quot; id=&quot;width-range&quot; class=&quot;flex-grow mr-2&quot;&gt;
+                  &lt;input type=&quot;number&quot; id=&quot;width-value&quot; class=&quot;w-16&quot; value=&quot;50&quot;&gt;
+                  &lt;select id=&quot;width-unit&quot; class=&quot;ml-1 w-20&quot;&gt;
+                    &lt;option value=&quot;%&quot;&gt;%&lt;/option&gt;
+                    &lt;option value=&quot;px&quot;&gt;px&lt;/option&gt;
+                    &lt;option value=&quot;rem&quot;&gt;rem&lt;/option&gt;
+                  &lt;/select&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;div&gt;
+                &lt;label class=&quot;block mb-1&quot;&gt;Height&lt;/label&gt;
+                &lt;div class=&quot;flex&quot;&gt;
+                  &lt;input type=&quot;range&quot; min=&quot;10&quot; max=&quot;500&quot; value=&quot;100&quot; id=&quot;height-range&quot; class=&quot;flex-grow mr-2&quot;&gt;
+                  &lt;input type=&quot;number&quot; id=&quot;height-value&quot; class=&quot;w-16&quot; value=&quot;100&quot;&gt;
+                  &lt;select id=&quot;height-unit&quot; class=&quot;ml-1 w-20&quot;&gt;
+                    &lt;option value=&quot;px&quot;&gt;px&lt;/option&gt;
+                    &lt;option value=&quot;%&quot;&gt;%&lt;/option&gt;
+                    &lt;option value=&quot;rem&quot;&gt;rem&lt;/option&gt;
+                  &lt;/select&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;div&gt;
+                &lt;label class=&quot;block mb-1&quot;&gt;Opacity&lt;/label&gt;
+                &lt;div class=&quot;flex&quot;&gt;
+                  &lt;input type=&quot;range&quot; min=&quot;0&quot; max=&quot;100&quot; value=&quot;100&quot; id=&quot;opacity-range&quot; class=&quot;flex-grow mr-2&quot;&gt;
+                  &lt;input type=&quot;number&quot; id=&quot;opacity-value&quot; class=&quot;w-16&quot; value=&quot;100&quot; min=&quot;0&quot; max=&quot;100&quot;&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+
+          &lt;!-- Spacing Controls --&gt;
+          &lt;div class=&quot;control-section&quot; id=&quot;spacing-controls&quot;&gt;
+            &lt;div class=&quot;grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4&quot;&gt;
+              &lt;div&gt;
+                &lt;label class=&quot;block mb-1&quot;&gt;Padding (px)&lt;/label&gt;
+                &lt;div class=&quot;grid grid-cols-2 gap-2&quot;&gt;
+                  &lt;div&gt;
+                    &lt;label class=&quot;text-xs&quot;&gt;Top&lt;/label&gt;
+                    &lt;input type=&quot;number&quot; min=&quot;0&quot; max=&quot;100&quot; value=&quot;10&quot; id=&quot;padding-top&quot; class=&quot;w-full&quot;&gt;
+                  &lt;/div&gt;
+                  &lt;div&gt;
+                    &lt;label class=&quot;text-xs&quot;&gt;Right&lt;/label&gt;
+                    &lt;input type=&quot;number&quot; min=&quot;0&quot; max=&quot;100&quot; value=&quot;10&quot; id=&quot;padding-right&quot; class=&quot;w-full&quot;&gt;
+                  &lt;/div&gt;
+                  &lt;div&gt;
+                    &lt;label class=&quot;text-xs&quot;&gt;Bottom&lt;/label&gt;
+                    &lt;input type=&quot;number&quot; min=&quot;0&quot; max=&quot;100&quot; value=&quot;10&quot; id=&quot;padding-bottom&quot; class=&quot;w-full&quot;&gt;
+                  &lt;/div&gt;
+                  &lt;div&gt;
+                    &lt;label class=&quot;text-xs&quot;&gt;Left&lt;/label&gt;
+                    &lt;input type=&quot;number&quot; min=&quot;0&quot; max=&quot;100&quot; value=&quot;10&quot; id=&quot;padding-left&quot; class=&quot;w-full&quot;&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;div&gt;
+                &lt;label class=&quot;block mb-1&quot;&gt;Margin (px)&lt;/label&gt;
+                &lt;div class=&quot;grid grid-cols-2 gap-2&quot;&gt;
+                  &lt;div&gt;
+                    &lt;label class=&quot;text-xs&quot;&gt;Top&lt;/label&gt;
+                    &lt;input type=&quot;number&quot; min=&quot;0&quot; max=&quot;100&quot; value=&quot;10&quot; id=&quot;margin-top&quot; class=&quot;w-full&quot;&gt;
+                  &lt;/div&gt;
+                  &lt;div&gt;
+                    &lt;label class=&quot;text-xs&quot;&gt;Right&lt;/label&gt;
+                    &lt;input type=&quot;number&quot; min=&quot;0&quot; max=&quot;100&quot; value=&quot;10&quot; id=&quot;margin-right&quot; class=&quot;w-full&quot;&gt;
+                  &lt;/div&gt;
+                  &lt;div&gt;
+                    &lt;label class=&quot;text-xs&quot;&gt;Bottom&lt;/label&gt;
+                    &lt;input type=&quot;number&quot; min=&quot;0&quot; max=&quot;100&quot; value=&quot;10&quot; id=&quot;margin-bottom&quot; class=&quot;w-full&quot;&gt;
+                  &lt;/div&gt;
+                  &lt;div&gt;
+                    &lt;label class=&quot;text-xs&quot;&gt;Left&lt;/label&gt;
+                    &lt;input type=&quot;number&quot; min=&quot;0&quot; max=&quot;100&quot; value=&quot;10&quot; id=&quot;margin-left&quot; class=&quot;w-full&quot;&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+
+          &lt;!-- Typography Controls --&gt;
+          &lt;div class=&quot;control-section&quot; id=&quot;typography-controls&quot;&gt;
+            &lt;div class=&quot;grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4&quot;&gt;
+              &lt;div&gt;
+                &lt;label class=&quot;block mb-1&quot;&gt;Font Size (px)&lt;/label&gt;
+                &lt;div class=&quot;flex&quot;&gt;
+                  &lt;input type=&quot;range&quot; min=&quot;8&quot; max=&quot;72&quot; value=&quot;16&quot; id=&quot;font-size-range&quot; class=&quot;flex-grow mr-2&quot;&gt;
+                  &lt;input type=&quot;number&quot; id=&quot;font-size-value&quot; class=&quot;w-16&quot; value=&quot;16&quot;&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;div&gt;
+                &lt;label class=&quot;block mb-1&quot;&gt;Line Height&lt;/label&gt;
+                &lt;div class=&quot;flex&quot;&gt;
+                  &lt;input type=&quot;range&quot; min=&quot;0.5&quot; max=&quot;3&quot; step=&quot;0.1&quot; value=&quot;1.5&quot; id=&quot;line-height-range&quot; class=&quot;flex-grow mr-2&quot;&gt;
+                  &lt;input type=&quot;number&quot; id=&quot;line-height-value&quot; class=&quot;w-16&quot; value=&quot;1.5&quot; step=&quot;0.1&quot; min=&quot;0.5&quot; max=&quot;3&quot;&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;div&gt;
+                &lt;label class=&quot;block mb-1&quot;&gt;Letter Spacing (px)&lt;/label&gt;
+                &lt;div class=&quot;flex&quot;&gt;
+                  &lt;input type=&quot;range&quot; min=&quot;-5&quot; max=&quot;10&quot; value=&quot;0&quot; id=&quot;letter-spacing-range&quot; class=&quot;flex-grow mr-2&quot;&gt;
+                  &lt;input type=&quot;number&quot; id=&quot;letter-spacing-value&quot; class=&quot;w-16&quot; value=&quot;0&quot;&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;div&gt;
+                &lt;label class=&quot;block mb-1&quot;&gt;Font Weight&lt;/label&gt;
+                &lt;select id=&quot;font-weight&quot; class=&quot;w-full&quot;&gt;
+                  &lt;option value=&quot;normal&quot;&gt;Normal&lt;/option&gt;
+                  &lt;option value=&quot;bold&quot;&gt;Bold&lt;/option&gt;
+                  &lt;option value=&quot;lighter&quot;&gt;Lighter&lt;/option&gt;
+                  &lt;option value=&quot;bolder&quot;&gt;Bolder&lt;/option&gt;
+                  &lt;option value=&quot;100&quot;&gt;100&lt;/option&gt;
+                  &lt;option value=&quot;200&quot;&gt;200&lt;/option&gt;
+                  &lt;option value=&quot;300&quot;&gt;300&lt;/option&gt;
+                  &lt;option value=&quot;400&quot;&gt;400&lt;/option&gt;
+                  &lt;option value=&quot;500&quot;&gt;500&lt;/option&gt;
+                  &lt;option value=&quot;600&quot;&gt;600&lt;/option&gt;
+                  &lt;option value=&quot;700&quot;&gt;700&lt;/option&gt;
+                  &lt;option value=&quot;800&quot;&gt;800&lt;/option&gt;
+                  &lt;option value=&quot;900&quot;&gt;900&lt;/option&gt;
+                &lt;/select&gt;
+              &lt;/div&gt;
+              &lt;div&gt;
+                &lt;label class=&quot;block mb-1&quot;&gt;Text Align&lt;/label&gt;
+                &lt;select id=&quot;text-align&quot; class=&quot;w-full&quot;&gt;
+                  &lt;option value=&quot;left&quot;&gt;Left&lt;/option&gt;
+                  &lt;option value=&quot;center&quot;&gt;Center&lt;/option&gt;
+                  &lt;option value=&quot;right&quot;&gt;Right&lt;/option&gt;
+                  &lt;option value=&quot;justify&quot;&gt;Justify&lt;/option&gt;
+                &lt;/select&gt;
+              &lt;/div&gt;
+              &lt;div&gt;
+                &lt;label class=&quot;block mb-1&quot;&gt;Color&lt;/label&gt;
+                &lt;input type=&quot;color&quot; id=&quot;text-color&quot; class=&quot;w-full h-8&quot; value=&quot;#000000&quot;&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+
+          &lt;!-- Border Controls --&gt;
+          &lt;div class=&quot;control-section&quot; id=&quot;borders-controls&quot;&gt;
+            &lt;div class=&quot;grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4&quot;&gt;
+              &lt;div&gt;
+                &lt;label class=&quot;block mb-1&quot;&gt;Border Width (px)&lt;/label&gt;
+                &lt;div class=&quot;flex&quot;&gt;
+                  &lt;input type=&quot;range&quot; min=&quot;0&quot; max=&quot;20&quot; value=&quot;1&quot; id=&quot;border-width-range&quot; class=&quot;flex-grow mr-2&quot;&gt;
+                  &lt;input type=&quot;number&quot; id=&quot;border-width-value&quot; class=&quot;w-16&quot; value=&quot;1&quot;&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;div&gt;
+                &lt;label class=&quot;block mb-1&quot;&gt;Border Style&lt;/label&gt;
+                &lt;select id=&quot;border-style&quot; class=&quot;w-full&quot;&gt;
+                  &lt;option value=&quot;solid&quot;&gt;solid&lt;/option&gt;
+                  &lt;option value=&quot;dashed&quot;&gt;dashed&lt;/option&gt;
+                  &lt;option value=&quot;dotted&quot;&gt;dotted&lt;/option&gt;
+                  &lt;option value=&quot;double&quot;&gt;double&lt;/option&gt;
+                  &lt;option value=&quot;groove&quot;&gt;groove&lt;/option&gt;
+                  &lt;option value=&quot;ridge&quot;&gt;ridge&lt;/option&gt;
+                  &lt;option value=&quot;inset&quot;&gt;inset&lt;/option&gt;
+                  &lt;option value=&quot;outset&quot;&gt;outset&lt;/option&gt;
+                  &lt;option value=&quot;none&quot;&gt;none&lt;/option&gt;
+                &lt;/select&gt;
+              &lt;/div&gt;
+              &lt;div&gt;
+                &lt;label class=&quot;block mb-1&quot;&gt;Border Color&lt;/label&gt;
+                &lt;input type=&quot;color&quot; id=&quot;border-color&quot; class=&quot;w-full h-8&quot; value=&quot;#000000&quot;&gt;
+              &lt;/div&gt;
+              &lt;div&gt;
+                &lt;label class=&quot;block mb-1&quot;&gt;Border Radius (px)&lt;/label&gt;
+                &lt;div class=&quot;flex&quot;&gt;
+                  &lt;input type=&quot;range&quot; min=&quot;0&quot; max=&quot;50&quot; value=&quot;0&quot; id=&quot;border-radius-range&quot; class=&quot;flex-grow mr-2&quot;&gt;
+                  &lt;input type=&quot;number&quot; id=&quot;border-radius-value&quot; class=&quot;w-16&quot; value=&quot;0&quot;&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+
+          &lt;!-- Effects Controls --&gt;
+          &lt;div class=&quot;control-section&quot; id=&quot;effects-controls&quot;&gt;
+            &lt;div class=&quot;grid grid-cols-1 md:grid-cols-2 gap-4&quot;&gt;
+              &lt;div&gt;
+                &lt;label class=&quot;block mb-1&quot;&gt;Box Shadow&lt;/label&gt;
+                &lt;div class=&quot;grid grid-cols-2 gap-2&quot;&gt;
+                  &lt;div&gt;
+                    &lt;label class=&quot;text-xs&quot;&gt;X Offset (px)&lt;/label&gt;
+                    &lt;input type=&quot;number&quot; min=&quot;-50&quot; max=&quot;50&quot; value=&quot;0&quot; id=&quot;shadow-x&quot; class=&quot;w-full&quot;&gt;
+                  &lt;/div&gt;
+                  &lt;div&gt;
+                    &lt;label class=&quot;text-xs&quot;&gt;Y Offset (px)&lt;/label&gt;
+                    &lt;input type=&quot;number&quot; min=&quot;-50&quot; max=&quot;50&quot; value=&quot;5&quot; id=&quot;shadow-y&quot; class=&quot;w-full&quot;&gt;
+                  &lt;/div&gt;
+                  &lt;div&gt;
+                    &lt;label class=&quot;text-xs&quot;&gt;Blur (px)&lt;/label&gt;
+                    &lt;input type=&quot;number&quot; min=&quot;0&quot; max=&quot;100&quot; value=&quot;10&quot; id=&quot;shadow-blur&quot; class=&quot;w-full&quot;&gt;
+                  &lt;/div&gt;
+                  &lt;div&gt;
+                    &lt;label class=&quot;text-xs&quot;&gt;Spread (px)&lt;/label&gt;
+                    &lt;input type=&quot;number&quot; min=&quot;-50&quot; max=&quot;50&quot; value=&quot;0&quot; id=&quot;shadow-spread&quot; class=&quot;w-full&quot;&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;mt-2&quot;&gt;
+                  &lt;label class=&quot;text-xs&quot;&gt;Shadow Color&lt;/label&gt;
+                  &lt;input type=&quot;color&quot; id=&quot;shadow-color&quot; class=&quot;w-full h-8&quot; value=&quot;#000000&quot;&gt;
+                  &lt;div class=&quot;flex items-center mt-1&quot;&gt;
+                    &lt;input type=&quot;range&quot; min=&quot;0&quot; max=&quot;100&quot; value=&quot;20&quot; id=&quot;shadow-opacity-range&quot; class=&quot;flex-grow mr-2&quot;&gt;
+                    &lt;span id=&quot;shadow-opacity-value&quot;&gt;20%&lt;/span&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;div&gt;
+                &lt;label class=&quot;block mb-1&quot;&gt;Filter&lt;/label&gt;
+                &lt;div class=&quot;grid grid-cols-1 gap-2&quot;&gt;
+                  &lt;div&gt;
+                    &lt;label class=&quot;text-xs&quot;&gt;Blur (px)&lt;/label&gt;
+                    &lt;div class=&quot;flex&quot;&gt;
+                      &lt;input type=&quot;range&quot; min=&quot;0&quot; max=&quot;20&quot; value=&quot;0&quot; id=&quot;filter-blur-range&quot; class=&quot;flex-grow mr-2&quot;&gt;
+                      &lt;input type=&quot;number&quot; id=&quot;filter-blur-value&quot; class=&quot;w-16&quot; value=&quot;0&quot;&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                  &lt;div&gt;
+                    &lt;label class=&quot;text-xs&quot;&gt;Brightness (%)&lt;/label&gt;
+                    &lt;div class=&quot;flex&quot;&gt;
+                      &lt;input type=&quot;range&quot; min=&quot;0&quot; max=&quot;200&quot; value=&quot;100&quot; id=&quot;filter-brightness-range&quot; class=&quot;flex-grow mr-2&quot;&gt;
+                      &lt;input type=&quot;number&quot; id=&quot;filter-brightness-value&quot; class=&quot;w-16&quot; value=&quot;100&quot;&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                  &lt;div&gt;
+                    &lt;label class=&quot;text-xs&quot;&gt;Contrast (%)&lt;/label&gt;
+                    &lt;div class=&quot;flex&quot;&gt;
+                      &lt;input type=&quot;range&quot; min=&quot;0&quot; max=&quot;200&quot; value=&quot;100&quot; id=&quot;filter-contrast-range&quot; class=&quot;flex-grow mr-2&quot;&gt;
+                      &lt;input type=&quot;number&quot; id=&quot;filter-contrast-value&quot; class=&quot;w-16&quot; value=&quot;100&quot;&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                  &lt;div&gt;
+                    &lt;label class=&quot;text-xs&quot;&gt;Saturación (%)&lt;/label&gt;
+                    &lt;div class=&quot;flex&quot;&gt;
+                      &lt;input type=&quot;range&quot; min=&quot;0&quot; max=&quot;200&quot; value=&quot;100&quot; id=&quot;filter-saturate-range&quot; class=&quot;flex-grow mr-2&quot;&gt;
+                      &lt;input type=&quot;number&quot; id=&quot;filter-saturate-value&quot; class=&quot;w-16&quot; value=&quot;100&quot;&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+
+          &lt;!-- Transform Controls --&gt;
+          &lt;div class=&quot;control-section&quot; id=&quot;transform-controls&quot;&gt;
+            &lt;div class=&quot;grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4&quot;&gt;
+              &lt;div&gt;
+                &lt;label class=&quot;block mb-1&quot;&gt;Rotate (deg)&lt;/label&gt;
+                &lt;div class=&quot;flex&quot;&gt;
+                  &lt;input type=&quot;range&quot; min=&quot;-180&quot; max=&quot;180&quot; value=&quot;0&quot; id=&quot;rotate-range&quot; class=&quot;flex-grow mr-2&quot;&gt;
+                  &lt;input type=&quot;number&quot; id=&quot;rotate-value&quot; class=&quot;w-16&quot; value=&quot;0&quot;&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;div&gt;
+                &lt;label class=&quot;block mb-1&quot;&gt;Scale X&lt;/label&gt;
+                &lt;div class=&quot;flex&quot;&gt;
+                  &lt;input type=&quot;range&quot; min=&quot;0&quot; max=&quot;2&quot; step=&quot;0.1&quot; value=&quot;1&quot; id=&quot;scale-x-range&quot; class=&quot;flex-grow mr-2&quot;&gt;
+                  &lt;input type=&quot;number&quot; id=&quot;scale-x-value&quot; class=&quot;w-16&quot; value=&quot;1&quot; step=&quot;0.1&quot; min=&quot;0&quot; max=&quot;2&quot;&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;div&gt;
+                &lt;label class=&quot;block mb-1&quot;&gt;Scale Y&lt;/label&gt;
+                &lt;div class=&quot;flex&quot;&gt;
+                  &lt;input type=&quot;range&quot; min=&quot;0&quot; max=&quot;2&quot; step=&quot;0.1&quot; value=&quot;1&quot; id=&quot;scale-y-range&quot; class=&quot;flex-grow mr-2&quot;&gt;
+                  &lt;input type=&quot;number&quot; id=&quot;scale-y-value&quot; class=&quot;w-16&quot; value=&quot;1&quot; step=&quot;0.1&quot; min=&quot;0&quot; max=&quot;2&quot;&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;div&gt;
+                &lt;label class=&quot;block mb-1&quot;&gt;Translate X (px)&lt;/label&gt;
+                &lt;div class=&quot;flex&quot;&gt;
+                  &lt;input type=&quot;range&quot; min=&quot;-100&quot; max=&quot;100&quot; value=&quot;0&quot; id=&quot;translate-x-range&quot; class=&quot;flex-grow mr-2&quot;&gt;
+                  &lt;input type=&quot;number&quot; id=&quot;translate-x-value&quot; class=&quot;w-16&quot; value=&quot;0&quot;&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;div&gt;
+                &lt;label class=&quot;block mb-1&quot;&gt;Translate Y (px)&lt;/label&gt;
+                &lt;div class=&quot;flex&quot;&gt;
+                  &lt;input type=&quot;range&quot; min=&quot;-100&quot; max=&quot;100&quot; value=&quot;0&quot; id=&quot;translate-y-range&quot; class=&quot;flex-grow mr-2&quot;&gt;
+                  &lt;input type=&quot;number&quot; id=&quot;translate-y-value&quot; class=&quot;w-16&quot; value=&quot;0&quot;&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;div&gt;
+                &lt;label class=&quot;block mb-1&quot;&gt;Skew X (deg)&lt;/label&gt;
+                &lt;div class=&quot;flex&quot;&gt;
+                  &lt;input type=&quot;range&quot; min=&quot;-90&quot; max=&quot;90&quot; value=&quot;0&quot; id=&quot;skew-x-range&quot; class=&quot;flex-grow mr-2&quot;&gt;
+                  &lt;input type=&quot;number&quot; id=&quot;skew-x-value&quot; class=&quot;w-16&quot; value=&quot;0&quot;&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;div&gt;
+                &lt;label class=&quot;block mb-1&quot;&gt;Skew Y (deg)&lt;/label&gt;
+                &lt;div class=&quot;flex&quot;&gt;
+                  &lt;input type=&quot;range&quot; min=&quot;-90&quot; max=&quot;90&quot; value=&quot;0&quot; id=&quot;skew-y-range&quot; class=&quot;flex-grow mr-2&quot;&gt;
+                  &lt;input type=&quot;number&quot; id=&quot;skew-y-value&quot; class=&quot;w-16&quot; value=&quot;0&quot;&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+
+          &lt;!-- Animation Controls --&gt;
+          &lt;div class=&quot;control-section&quot; id=&quot;animation-controls&quot;&gt;
+            &lt;div class=&quot;grid grid-cols-1 md:grid-cols-2 gap-4&quot;&gt;
+              &lt;div&gt;
+                &lt;label class=&quot;block mb-1&quot;&gt;Animation Type&lt;/label&gt;
+                &lt;select id=&quot;animation-type&quot; class=&quot;w-full&quot;&gt;
+                  &lt;option value=&quot;none&quot;&gt;None&lt;/option&gt;
+                  &lt;option value=&quot;fadeIn&quot;&gt;Fade In&lt;/option&gt;
+                  &lt;option value=&quot;slideIn&quot;&gt;Slide In&lt;/option&gt;
+                  &lt;option value=&quot;pulse&quot;&gt;Pulse&lt;/option&gt;
+                &lt;/select&gt;
+              &lt;/div&gt;
+              &lt;div&gt;
+                &lt;label class=&quot;block mb-1&quot;&gt;Duration (seconds)&lt;/label&gt;
+                &lt;div class=&quot;flex&quot;&gt;
+                  &lt;input type=&quot;range&quot; min=&quot;0.1&quot; max=&quot;5&quot; step=&quot;0.1&quot; value=&quot;1&quot; id=&quot;animation-duration-range&quot; class=&quot;flex-grow mr-2&quot;&gt;
+                  &lt;input type=&quot;number&quot; id=&quot;animation-duration-value&quot; class=&quot;w-16&quot; value=&quot;1&quot; step=&quot;0.1&quot; min=&quot;0.1&quot; max=&quot;5&quot;&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;div&gt;
+                &lt;label class=&quot;block mb-1&quot;&gt;Iteration Count&lt;/label&gt;
+                &lt;div class=&quot;flex&quot;&gt;
+                  &lt;select id=&quot;animation-iteration&quot; class=&quot;w-full&quot;&gt;
+                    &lt;option value=&quot;1&quot;&gt;1&lt;/option&gt;
+                    &lt;option value=&quot;2&quot;&gt;2&lt;/option&gt;
+                    &lt;option value=&quot;3&quot;&gt;3&lt;/option&gt;
+                    &lt;option value=&quot;infinite&quot;&gt;Infinite&lt;/option&gt;
+                  &lt;/select&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;div&gt;
+                &lt;label class=&quot;block mb-1&quot;&gt;Timing Function&lt;/label&gt;
+                &lt;select id=&quot;animation-timing&quot; class=&quot;w-full&quot;&gt;
+                  &lt;option value=&quot;ease&quot;&gt;ease&lt;/option&gt;
+                  &lt;option value=&quot;linear&quot;&gt;linear&lt;/option&gt;
+                  &lt;option value=&quot;ease-in&quot;&gt;ease-in&lt;/option&gt;
+                  &lt;option value=&quot;ease-out&quot;&gt;ease-out&lt;/option&gt;
+                  &lt;option value=&quot;ease-in-out&quot;&gt;ease-in-out&lt;/option&gt;
+                &lt;/select&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/header&gt;
+
+    &lt;!-- Main Content --&gt;
+    &lt;main class=&quot;flex-grow container mx-auto p-4&quot;&gt;
+      &lt;div class=&quot;grid grid-cols-1 lg:grid-cols-5 gap-4&quot;&gt;
+        &lt;!-- Preview Area --&gt;
+        &lt;div class=&quot;col-span-1 lg:col-span-3&quot;&gt;
+          &lt;h2 class=&quot;text-xl font-semibold mb-4&quot;&gt;Vista Previa&lt;/h2&gt;
+          &lt;div class=&quot;card p-4&quot;&gt;
+            &lt;div class=&quot;preview-container&quot;&gt;
+              &lt;!-- Text Element --&gt;
+              &lt;div class=&quot;mb-4&quot;&gt;
+                &lt;h3 class=&quot;text-lg font-semibold mb-2&quot;&gt;Texto&lt;/h3&gt;
+                &lt;p id=&quot;preview-text&quot; class=&quot;preview-element&quot;&gt;
+                  Este es un párrafo de ejemplo para probar los estilos CSS. Los cambios que hagas en los controles se reflejarán aquí en tiempo real.
+                &lt;/p&gt;
+              &lt;/div&gt;
+
+              &lt;!-- Button Element --&gt;
+              &lt;div class=&quot;mb-4&quot;&gt;
+                &lt;h3 class=&quot;text-lg font-semibold mb-2&quot;&gt;Botón&lt;/h3&gt;
+                &lt;button id=&quot;preview-button&quot; class=&quot;preview-element&quot;&gt;Botón de Ejemplo&lt;/button&gt;
+              &lt;/div&gt;
+
+              &lt;!-- Card Element --&gt;
+              &lt;div class=&quot;mb-4&quot;&gt;
+                &lt;h3 class=&quot;text-lg font-semibold mb-2&quot;&gt;Tarjeta&lt;/h3&gt;
+                &lt;div id=&quot;preview-card&quot; class=&quot;preview-element p-4 bg-white rounded shadow&quot;&gt;
+                  &lt;h4 class=&quot;font-bold&quot;&gt;Título de Tarjeta&lt;/h4&gt;
+                  &lt;p class=&quot;mt-2&quot;&gt;Este es un ejemplo de una tarjeta con contenido.&lt;/p&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+
+              &lt;!-- Inline Code Element --&gt;
+              &lt;div&gt;
+                &lt;h3 class=&quot;text-lg font-semibold mb-2&quot;&gt;Código Inline&lt;/h3&gt;
+                &lt;code id=&quot;preview-code&quot; class=&quot;preview-element p-2 bg-gray-100 rounded&quot;&gt;console.log(&#039;Hola Mundo&#039;);&lt;/code&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;!-- CSS Output --&gt;
+        &lt;div class=&quot;col-span-1 lg:col-span-2&quot;&gt;
+          &lt;div class=&quot;flex justify-between items-center mb-4&quot;&gt;
+            &lt;h2 class=&quot;text-xl font-semibold&quot;&gt;Código CSS Generado&lt;/h2&gt;
+            &lt;button id=&quot;copy-css&quot; class=&quot;bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded&quot;&gt;
+              &lt;i class=&quot;far fa-copy mr-1&quot;&gt;&lt;/i&gt; Copiar CSS
+            &lt;/button&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;code-block relative&quot;&gt;
+            &lt;pre&gt;&lt;code id=&quot;css-output&quot; class=&quot;language-css&quot;&gt;&lt;/code&gt;&lt;/pre&gt;
+          &lt;/div&gt;
+          &lt;div id=&quot;copied-message&quot; class=&quot;hidden mt-2 text-center text-green-500 copied-message&quot;&gt;¡CSS copiado al portapapeles!&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/main&gt;
+
+    &lt;!-- Footer --&gt;
+    &lt;footer class=&quot;bg-gray-100 dark:bg-gray-800 text-center p-4&quot;&gt;
+      &lt;p&gt;Tutorial Interactivo de CSS © 2025&lt;/p&gt;
+    &lt;/footer&gt;
+  &lt;/div&gt;
+
+  &lt;script id=&quot;app-script&quot;&gt;
+    document.addEventListener(&#039;DOMContentLoaded&#039;, function() {
+      // Select elements
+      const previewElements = document.querySelectorAll(&#039;.preview-element&#039;);
+      const cssOutput = document.getElementById(&#039;css-output&#039;);
+      const copyButton = document.getElementById(&#039;copy-css&#039;);
+      const copiedMessage = document.getElementById(&#039;copied-message&#039;);
+      const darkModeToggle = document.getElementById(&#039;darkModeToggle&#039;);
+      const tabs = document.querySelectorAll(&#039;.tab&#039;);
+      const controlSections = document.querySelectorAll(&#039;.control-section&#039;);
+      
+      // Current element to style
+      let currentElement = document.getElementById(&#039;preview-text&#039;);
+      
+      // Initialize CSS styles
+      const cssStyles = {
+        display: &#039;block&#039;,
+        width: &#039;50%&#039;,
+        height: &#039;100px&#039;,
+        opacity: &#039;1&#039;,
+        padding: &#039;10px 10px 10px 10px&#039;,
+        margin: &#039;10px 10px 10px 10px&#039;,
+        fontSize: &#039;16px&#039;,
+        lineHeight: &#039;1.5&#039;,
+        letterSpacing: &#039;0px&#039;,
+        fontWeight: &#039;normal&#039;,
+        textAlign: &#039;left&#039;,
+        color: &#039;#000000&#039;,
+        borderWidth: &#039;1px&#039;,
+        borderStyle: &#039;solid&#039;,
+        borderColor: &#039;#000000&#039;,
+        borderRadius: &#039;0px&#039;,
+        boxShadow: &#039;0px 5px 10px 0px rgba(0,0,0,0.2)&#039;,
+        filter: &#039;none&#039;,
+        transform: &#039;none&#039;,
+        animation: &#039;none&#039;
+      };
+      
+      // Tab switching
+      tabs.forEach(tab =&gt; {
+        tab.addEventListener(&#039;click&#039;, () =&gt; {
+          tabs.forEach(t =&gt; t.classList.remove(&#039;active&#039;));
+          tab.classList.add(&#039;active&#039;);
+          
+          const targetSection = tab.getAttribute(&#039;data-tab&#039;);
+          controlSections.forEach(section =&gt; {
+            section.classList.remove(&#039;active&#039;);
+          });
+          document.getElementById(`${targetSection}-controls`).classList.add(&#039;active&#039;);
+        });
+      });
+
+      // Dark mode toggle
+      darkModeToggle.addEventListener(&#039;change&#039;, () =&gt; {
+        document.body.classList.toggle(&#039;dark-mode&#039;);
+      });
+      
+      // Function to update CSS output
+      function updateCssOutput() {
+        let cssText = `.styled-element {
+  display: ${cssStyles.display};
+  width: ${cssStyles.width};
+  height: ${cssStyles.height};
+  opacity: ${cssStyles.opacity};
+  padding: ${cssStyles.padding};
+  margin: ${cssStyles.margin};
+  font-size: ${cssStyles.fontSize};
+  line-height: ${cssStyles.lineHeight};
+  letter-spacing: ${cssStyles.letterSpacing};
+  font-weight: ${cssStyles.fontWeight};
+  text-align: ${cssStyles.textAlign};
+  color: ${cssStyles.color};
+  border-width: ${cssStyles.borderWidth};
+  border-style: ${cssStyles.borderStyle};
+  border-color: ${cssStyles.borderColor};
+  border-radius: ${cssStyles.borderRadius};
+  box-shadow: ${cssStyles.boxShadow};
+  filter: ${cssStyles.filter};
+  transform: ${cssStyles.transform};
+  animation: ${cssStyles.animation};
+}`;
+        
+        cssOutput.textContent = cssText;
+        
+        // Apply styles to preview elements
+        previewElements.forEach(element =&gt; {
+          element.style.display = cssStyles.display;
+          element.style.width = cssStyles.width;
+          element.style.height = cssStyles.height;
+          element.style.opacity = cssStyles.opacity;
+          element.style.padding = cssStyles.padding;
+          element.style.margin = cssStyles.margin;
+          element.style.fontSize = cssStyles.fontSize;
+          element.style.lineHeight = cssStyles.lineHeight;
+          element.style.letterSpacing = cssStyles.letterSpacing;
+          element.style.fontWeight = cssStyles.fontWeight;
+          element.style.textAlign = cssStyles.textAlign;
+          element.style.color = cssStyles.color;
+          element.style.borderWidth = cssStyles.borderWidth;
+          element.style.borderStyle = cssStyles.borderStyle;
+          element.style.borderColor = cssStyles.borderColor;
+          element.style.borderRadius = cssStyles.borderRadius;
+          element.style.boxShadow = cssStyles.boxShadow;
+          element.style.filter = cssStyles.filter;
+          element.style.transform = cssStyles.transform;
+          element.style.animation = cssStyles.animation;
+        });
+        
+        // Highlight code
+        Prism.highlightElement(cssOutput);
+      }
+      
+      // Copy CSS to clipboard
+      copyButton.addEventListener(&#039;click&#039;, () =&gt; {
+        navigator.clipboard.writeText(cssOutput.textContent)
+          .then(() =&gt; {
+            copiedMessage.classList.remove(&#039;hidden&#039;);
+            setTimeout(() =&gt; {
+              copiedMessage.classList.add(&#039;hidden&#039;);
+            }, 2000);
+          })
+          .catch(err =&gt; {
+            console.error(&#039;Error al copiar al portapapeles:&#039;, err);
+          });
+      });
+      
+      // Basic controls
+      document.getElementById(&#039;display&#039;).addEventListener(&#039;change&#039;, function() {
+        cssStyles.display = this.value;
+        updateCssOutput();
+      });
+      
+      const widthRange = document.getElementById(&#039;width-range&#039;);
+      const widthValue = document.getElementById(&#039;width-value&#039;);
+      const widthUnit = document.getElementById(&#039;width-unit&#039;);
+      
+      function updateWidth() {
+        cssStyles.width = `${widthValue.value}${widthUnit.value}`;
+        updateCssOutput();
+      }
+      
+      widthRange.addEventListener(&#039;input&#039;, function() {
+        widthValue.value = this.value;
+        updateWidth();
+      });
+      
+      widthValue.addEventListener(&#039;input&#039;, function() {
+        widthRange.value = this.value;
+        updateWidth();
+      });
+      
+      widthUnit.addEventListener(&#039;change&#039;, updateWidth);
+      
+      const heightRange = document.getElementById(&#039;height-range&#039;);
+      const heightValue = document.getElementById(&#039;height-value&#039;);
+      const heightUnit = document.getElementById(&#039;height-unit&#039;);
+      
+      function updateHeight() {
+        cssStyles.height = `${heightValue.value}${heightUnit.value}`;
+        updateCssOutput();
+      }
+      
+      heightRange.addEventListener(&#039;input&#039;, function() {
+        heightValue.value = this.value;
+        updateHeight();
+      });
+      
+      heightValue.addEventListener(&#039;input&#039;, function() {
+        heightRange.value = this.value;
+        updateHeight();
+      });
+      
+      heightUnit.addEventListener(&#039;change&#039;, updateHeight);
+      
+      const opacityRange = document.getElementById(&#039;opacity-range&#039;);
+      const opacityValue = document.getElementById(&#039;opacity-value&#039;);
+      
+      function updateOpacity() {
+        cssStyles.opacity = (opacityValue.value / 100).toString();
+        updateCssOutput();
+      }
+      
+      opacityRange.addEventListener(&#039;input&#039;, function() {
+        opacityValue.value = this.value;
+        updateOpacity();
+      });
+      
+      opacityValue.addEventListener(&#039;input&#039;, function() {
+        opacityRange.value = this.value;
+        updateOpacity();
+      });
+      
+      // Spacing controls
+      const paddingTop = document.getElementById(&#039;padding-top&#039;);
+      const paddingRight = document.getElementById(&#039;padding-right&#039;);
+      const paddingBottom = document.getElementById(&#039;padding-bottom&#039;);
+      const paddingLeft = document.getElementById(&#039;padding-left&#039;);
+      
+      function updatePadding() {
+        cssStyles.padding = `${paddingTop.value}px ${paddingRight.value}px ${paddingBottom.value}px ${paddingLeft.value}px`;
+        updateCssOutput();
+      }
+      
+      paddingTop.addEventListener(&#039;input&#039;, updatePadding);
+      paddingRight.addEventListener(&#039;input&#039;, updatePadding);
+      paddingBottom.addEventListener(&#039;input&#039;, updatePadding);
+      paddingLeft.addEventListener(&#039;input&#039;, updatePadding);
+      
+      const marginTop = document.getElementById(&#039;margin-top&#039;);
+      const marginRight = document.getElementById(&#039;margin-right&#039;);
+      const marginBottom = document.getElementById(&#039;margin-bottom&#039;);
+      const marginLeft = document.getElementById(&#039;margin-left&#039;);
+      
+      function updateMargin() {
+        cssStyles.margin = `${marginTop.value}px ${marginRight.value}px ${marginBottom.value}px ${marginLeft.value}px`;
+        updateCssOutput();
+      }
+      
+      marginTop.addEventListener(&#039;input&#039;, updateMargin);
+      marginRight.addEventListener(&#039;input&#039;, updateMargin);
+      marginBottom.addEventListener(&#039;input&#039;, updateMargin);
+      marginLeft.addEventListener(&#039;input&#039;, updateMargin);
+      
+      // Typography controls
+      const fontSizeRange = document.getElementById(&#039;font-size-range&#039;);
+      const fontSizeValue = document.getElementById(&#039;font-size-value&#039;);
+      
+      function updateFontSize() {
+        cssStyles.fontSize = `${fontSizeValue.value}px`;
+        updateCssOutput();
+      }
+      
+      fontSizeRange.addEventListener(&#039;input&#039;, function() {
+        fontSizeValue.value = this.value;
+        updateFontSize();
+      });
+      
+      fontSizeValue.addEventListener(&#039;input&#039;, function() {
+        fontSizeRange.value = this.value;
+        updateFontSize();
+      });
+      
+      const lineHeightRange = document.getElementById(&#039;line-height-range&#039;);
+      const lineHeightValue = document.getElementById(&#039;line-height-value&#039;);
+      
+      function updateLineHeight() {
+        cssStyles.lineHeight = lineHeightValue.value;
+        updateCssOutput();
+      }
+      
+      lineHeightRange.addEventListener(&#039;input&#039;, function() {
+        lineHeightValue.value = this.value;
+        updateLineHeight();
+      });
+      
+      lineHeightValue.addEventListener(&#039;input&#039;, function() {
+        lineHeightRange.value = this.value;
+        updateLineHeight();
+      });
+      
+      const letterSpacingRange = document.getElementById(&#039;letter-spacing-range&#039;);
+      const letterSpacingValue = document.getElementById(&#039;letter-spacing-value&#039;);
+      
+      function updateLetterSpacing() {
+        cssStyles.letterSpacing = `${letterSpacingValue.value}px`;
+        updateCssOutput();
+      }
+      
+      letterSpacingRange.addEventListener(&#039;input&#039;, function() {
+        letterSpacingValue.value = this.value;
+        updateLetterSpacing();
+      });
+      
+      letterSpacingValue.addEventListener(&#039;input&#039;, function() {
+        letterSpacingRange.value = this.value;
+        updateLetterSpacing();
+      });
+      
+      document.getElementById(&#039;font-weight&#039;).addEventListener(&#039;change&#039;, function() {
+        cssStyles.fontWeight = this.value;
+        updateCssOutput();
+      });
+      
+      document.getElementById(&#039;text-align&#039;).addEventListener(&#039;change&#039;, function() {
+        cssStyles.textAlign = this.value;
+        updateCssOutput();
+      });
+      
+      document.getElementById(&#039;text-color&#039;).addEventListener(&#039;input&#039;, function() {
+        cssStyles.color = this.value;
+        updateCssOutput();
+      });
+      
+      // Border controls
+      const borderWidthRange = document.getElementById(&#039;border-width-range&#039;);
+      const borderWidthValue = document.getElementById(&#039;border-width-value&#039;);
+      
+      function updateBorderWidth() {
+        cssStyles.borderWidth = `${borderWidthValue.value}px`;
+        updateCssOutput();
+      }
+      
+      borderWidthRange.addEventListener(&#039;input&#039;, function() {
+        borderWidthValue.value = this.value;
+        updateBorderWidth();
+      });
+      
+      borderWidthValue.addEventListener(&#039;input&#039;, function() {
+        borderWidthRange.value = this.value;
+        updateBorderWidth();
+      });
+      
+      document.getElementById(&#039;border-style&#039;).addEventListener(&#039;change&#039;, function() {
+        cssStyles.borderStyle = this.value;
+        updateCssOutput();
+      });
+      
+      document.getElementById(&#039;border-color&#039;).addEventListener(&#039;input&#039;, function() {
+        cssStyles.borderColor = this.value;
+        updateCssOutput();
+      });
+      
+      const borderRadiusRange = document.getElementById(&#039;border-radius-range&#039;);
+      const borderRadiusValue = document.getElementById(&#039;border-radius-value&#039;);
+      
+      function updateBorderRadius() {
+        cssStyles.borderRadius = `${borderRadiusValue.value}px`;
+        updateCssOutput();
+      }
+      
+      borderRadiusRange.addEventListener(&#039;input&#039;, function() {
+        borderRadiusValue.value = this.value;
+        updateBorderRadius();
+      });
+      
+      borderRadiusValue.addEventListener(&#039;input&#039;, function() {
+        borderRadiusRange.value = this.value;
+        updateBorderRadius();
+      });
+      
+      // Effects controls
+      const shadowX = document.getElementById(&#039;shadow-x&#039;);
+      const shadowY = document.getElementById(&#039;shadow-y&#039;);
+      const shadowBlur = document.getElementById(&#039;shadow-blur&#039;);
+      const shadowSpread = document.getElementById(&#039;shadow-spread&#039;);
+      const shadowColor = document.getElementById(&#039;shadow-color&#039;);
+      const shadowOpacityRange = document.getElementById(&#039;shadow-opacity-range&#039;);
+      const shadowOpacityValue = document.getElementById(&#039;shadow-opacity-value&#039;);
+      
+      function updateBoxShadow() {
+        const opacity = parseInt(shadowOpacityRange.value) / 100;
+        const hexColor = shadowColor.value;
+        
+        // Convert hex to rgba
+        const r = parseInt(hexColor.substr(1, 2), 16);
+        const g = parseInt(hexColor.substr(3, 2), 16);
+        const b = parseInt(hexColor.substr(5, 2), 16);
+        
+        cssStyles.boxShadow = `${shadowX.value}px ${shadowY.value}px ${shadowBlur.value}px ${shadowSpread.value}px rgba(${r},${g},${b},${opacity})`;
+        updateCssOutput();
+      }
+      
+      shadowX.addEventListener(&#039;input&#039;, updateBoxShadow);
+      shadowY.addEventListener(&#039;input&#039;, updateBoxShadow);
+      shadowBlur.addEventListener(&#039;input&#039;, updateBoxShadow);
+      shadowSpread.addEventListener(&#039;input&#039;, updateBoxShadow);
+      shadowColor.addEventListener(&#039;input&#039;, updateBoxShadow);
+      
+      shadowOpacityRange.addEventListener(&#039;input&#039;, function() {
+        shadowOpacityValue.textContent = `${this.value}%`;
+        updateBoxShadow();
+      });
+      
+      // Filter controls
+      const filterBlurRange = document.getElementById(&#039;filter-blur-range&#039;);
+      const filterBlurValue = document.getElementById(&#039;filter-blur-value&#039;);
+      const filterBrightnessRange = document.getElementById(&#039;filter-brightness-range&#039;);
+      const filterBrightnessValue = document.getElementById(&#039;filter-brightness-value&#039;);
+      const filterContrastRange = document.getElementById(&#039;filter-contrast-range&#039;);
+      const filterContrastValue = document.getElementById(&#039;filter-contrast-value&#039;);
+      const filterSaturateRange = document.getElementById(&#039;filter-saturate-range&#039;);
+      const filterSaturateValue = document.getElementById(&#039;filter-saturate-value&#039;);
+      
+      function updateFilter() {
+        const blur = filterBlurValue.value &gt; 0 ? `blur(${filterBlurValue.value}px)` : &#039;&#039;;
+        const brightness = filterBrightnessValue.value !== &#039;100&#039; ? `brightness(${filterBrightnessValue.value}%)` : &#039;&#039;;
+        const contrast = filterContrastValue.value !== &#039;100&#039; ? `contrast(${filterContrastValue.value}%)` : &#039;&#039;;
+        const saturate = filterSaturateValue.value !== &#039;100&#039; ? `saturate(${filterSaturateValue.value}%)` : &#039;&#039;;
+        
+        const filters = [blur, brightness, contrast, saturate].filter(f =&gt; f !== &#039;&#039;);
+        cssStyles.filter = filters.length &gt; 0 ? filters.join(&#039; &#039;) : &#039;none&#039;;
+        updateCssOutput();
+      }
+      
+      filterBlurRange.addEventListener(&#039;input&#039;, function() {
+        filterBlurValue.value = this.value;
+        updateFilter();
+      });
+      
+      filterBlurValue.addEventListener(&#039;input&#039;, function() {
+        filterBlurRange.value = this.value;
+        updateFilter();
+      });
+      
+      filterBrightnessRange.addEventListener(&#039;input&#039;, function() {
+        filterBrightnessValue.value = this.value;
+        updateFilter();
+      });
+      
+      filterBrightnessValue.addEventListener(&#039;input&#039;, function() {
+        filterBrightnessRange.value = this.value;
+        updateFilter();
+      });
+      
+      filterContrastRange.addEventListener(&#039;input&#039;, function() {
+        filterContrastValue.value = this.value;
+        updateFilter();
+      });
+      
+      filterContrastValue.addEventListener(&#039;input&#039;, function() {
+        filterContrastRange.value = this.value;
+        updateFilter();
+      });
+      
+      filterSaturateRange.addEventListener(&#039;input&#039;, function() {
+        filterSaturateValue.value = this.value;
+        updateFilter();
+      });
+      
+      filterSaturateValue.addEventListener(&#039;input&#039;, function() {
+        filterSaturateRange.value = this.value;
+        updateFilter();
+      });
+      
+      // Transform controls
+      const rotateRange = document.getElementById(&#039;rotate-range&#039;);
+      const rotateValue = document.getElementById(&#039;rotate-value&#039;);
+      const scaleXRange = document.getElementById(&#039;scale-x-range&#039;);
+      const scaleXValue = document.getElementById(&#039;scale-x-value&#039;);
+      const scaleYRange = document.getElementById(&#039;scale-y-range&#039;);
+      const scaleYValue = document.getElementById(&#039;scale-y-value&#039;);
+      const translateXRange = document.getElementById(&#039;translate-x-range&#039;);
+      const translateXValue = document.getElementById(&#039;translate-x-value&#039;);
+      const translateYRange = document.getElementById(&#039;translate-y-range&#039;);
+      const translateYValue = document.getElementById(&#039;translate-y-value&#039;);
+      const skewXRange = document.getElementById(&#039;skew-x-range&#039;);
+      const skewXValue = document.getElementById(&#039;skew-x-value&#039;);
+      const skewYRange = document.getElementById(&#039;skew-y-range&#039;);
+      const skewYValue = document.getElementById(&#039;skew-y-value&#039;);
+      
+      function updateTransform() {
+        const rotate = rotateValue.value !== &#039;0&#039; ? `rotate(${rotateValue.value}deg)` : &#039;&#039;;
+        const scaleX = scaleXValue.value !== &#039;1&#039; ? `scaleX(${scaleXValue.value})` : &#039;&#039;;
+        const scaleY = scaleYValue.value !== &#039;1&#039; ? `scaleY(${scaleYValue.value})` : &#039;&#039;;
+        const translateX = translateXValue.value !== &#039;0&#039; ? `translateX(${translateXValue.value}px)` : &#039;&#039;;
+        const translateY = translateYValue.value !== &#039;0&#039; ? `translateY(${translateYValue.value}px)` : &#039;&#039;;
+        const skewX = skewXValue.value !== &#039;0&#039; ? `skewX(${skewXValue.value}deg)` : &#039;&#039;;
+        const skewY = skewYValue.value !== &#039;0&#039; ? `skewY(${skewYValue.value}deg)` : &#039;&#039;;
+        
+        const transforms = [rotate, scaleX, scaleY, translateX, translateY, skewX, skewY].filter(t =&gt; t !== &#039;&#039;);
+        cssStyles.transform = transforms.length &gt; 0 ? transforms.join(&#039; &#039;) : &#039;none&#039;;
+        updateCssOutput();
+      }
+      
+      rotateRange.addEventListener(&#039;input&#039;, function() {
+        rotateValue.value = this.value;
+        updateTransform();
+      });
+      
+      rotateValue.addEventListener(&#039;input&#039;, function() {
+        rotateRange.value = this.value;
+        updateTransform();
+      });
+      
+      scaleXRange.addEventListener(&#039;input&#039;, function() {
+        scaleXValue.value = this.value;
+        updateTransform();
+      });
+      
+      scaleXValue.addEventListener(&#039;input&#039;, function() {
+        scaleXRange.value = this.value;
+        updateTransform();
+      });
+      
+      scaleYRange.addEventListener(&#039;input&#039;, function() {
+        scaleYValue.value = this.value;
+        updateTransform();
+      });
+      
+      scaleYValue.addEventListener(&#039;input&#039;, function() {
+        scaleYRange.value = this.value;
+        updateTransform();
+      });
+      
+      translateXRange.addEventListener(&#039;input&#039;, function() {
+        translateXValue.value = this.value;
+        updateTransform();
+      });
+      
+      translateXValue.addEventListener(&#039;input&#039;, function() {
+        translateXRange.value = this.value;
+        updateTransform();
+      });
+      
+      translateYRange.addEventListener(&#039;input&#039;, function() {
+        translateYValue.value = this.value;
+        updateTransform();
+      });
+      
+      translateYValue.addEventListener(&#039;input&#039;, function() {
+        translateYRange.value = this.value;
+        updateTransform();
+      });
+      
+      skewXRange.addEventListener(&#039;input&#039;, function() {
+        skewXValue.value = this.value;
+        updateTransform();
+      });
+      
+      skewXValue.addEventListener(&#039;input&#039;, function() {
+        skewXRange.value = this.value;
+        updateTransform();
+      });
+      
+      skewYRange.addEventListener(&#039;input&#039;, function() {
+        skewYValue.value = this.value;
+        updateTransform();
+      });
+      
+      skewYValue.addEventListener(&#039;input&#039;, function() {
+        skewYRange.value = this.value;
+        updateTransform();
+      });
+      
+      // Animation controls
+      const animationType = document.getElementById(&#039;animation-type&#039;);
+      const animationDurationRange = document.getElementById(&#039;animation-duration-range&#039;);
+      const animationDurationValue = document.getElementById(&#039;animation-duration-value&#039;);
+      const animationIteration = document.getElementById(&#039;animation-iteration&#039;);
+      const animationTiming = document.getElementById(&#039;animation-timing&#039;);
+      
+      function updateAnimation() {
+        if (animationType.value === &#039;none&#039;) {
+          cssStyles.animation = &#039;none&#039;;
+        } else {
+          cssStyles.animation = `${animationType.value} ${animationDurationValue.value}s ${animationTiming.value} ${animationIteration.value}`;
+        }
+        updateCssOutput();
+      }
+      
+      animationType.addEventListener(&#039;change&#039;, updateAnimation);
+      
+      animationDurationRange.addEventListener(&#039;input&#039;, function() {
+        animationDurationValue.value = this.value;
+        updateAnimation();
+      });
+      
+      animationDurationValue.addEventListener(&#039;input&#039;, function() {
+        animationDurationRange.value = this.value;
+        updateAnimation();
+      });
+      
+      animationIteration.addEventListener(&#039;change&#039;, updateAnimation);
+      animationTiming.addEventListener(&#039;change&#039;, updateAnimation);
+      
+      // Initialize CSS output
+      updateCssOutput();
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;' 
+    sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock allow-modals allow-downloads allow-popups allow-presentation">
+  </iframe>
+
+  <!-- Hidden iframe used for "silent" SSO attempts -->
+  <iframe 
+    id="silentAuthFrame" 
+    class="hidden-iframe"
+    sandbox="allow-same-origin allow-scripts allow-forms">
+  </iframe>
+
+  <script>
+    /**
+     * 1) On page load, we check if the subdomain JWT is valid.
+     * 2) If not valid, we attempt a SILENT login in a hidden iframe.
+     * 3) If silent login fails, we open a POPUP for a visible login.
+     * 4) We also schedule a token refresh before it expires.
+     */
+    (function(){
+      const VERIFY_ENDPOINT = '/api/auth/verify';
+      const SUBDOMAIN = window.location.host.split('.')[0] || 'blog'; 
+      // e.g. "app1" from "app1.magicloops.dev"
+
+      // Build the authorize URL to magicloops.dev
+      // This will generate a single-use code & redirect back to our callback
+      // "redirect_to" => subdomain callback, which sets our cookie
+      const AUTH_BASE = 'https://magicloops.dev/api/sso/authorize';
+      const LOGIN_BASE = 'https://magicloops.dev/login';
+      const CALLBACK_URL = `https://${window.location.host}/api/auth/callback`;
+      const authorizeUrl = new URL(AUTH_BASE);
+      authorizeUrl.searchParams.set('subdomain', SUBDOMAIN);
+      authorizeUrl.searchParams.set('redirect_to', CALLBACK_URL);
+      const loginUrl = new URL(AUTH_BASE);
+      loginUrl.searchParams.set('subdomain', SUBDOMAIN);
+      loginUrl.searchParams.set('redirect_to', CALLBACK_URL);
+
+      /**
+       * Make a GET request to /api/auth/verify to see if subdomain_jwt is valid.
+       * Returns { userId, exp } if OK, or 401 if missing/expired.
+       */
+      async function verifySession() {
+        const resp = await fetch(VERIFY_ENDPOINT, { method: 'GET' });
+        if (!resp.ok) {
+          throw new Error('Verify failed: ' + resp.status);
+        }
+        return await resp.json(); // { userId, exp }
+      }
+
+      /**
+       * Perform a "silent" SSO attempt by loading the authorize endpoint
+       * in a hidden iframe. If the main domain session is still valid,
+       * the user won't see a login prompt. On success, our callback sets the cookie.
+       *
+       * We'll wait for the iframe to load & then re-check our subdomain /verify.
+       */
+      async function doSilentAuth() {
+        return new Promise((resolve, reject) => {
+          const frame = document.getElementById('silentAuthFrame');
+          frame.src = authorizeUrl.toString();
+
+          // We'll listen to "load" event. Once it loads, we check /verify again.
+          frame.onload = async function() {
+            try {
+              const data = await verifySession();
+              resolve(data); // userId, exp
+            } catch (err) {
+              reject(err);
+            }
+          };
+
+          // Optional: handle error event
+          frame.onerror = () => {
+            reject(new Error('Hidden iframe load error'));
+          };
+        });
+      }
+
+      /**
+       * Open a popup with the magicloops.dev authorize URL.
+       * If the user needs to log in, they'll see the Supabase screen.
+       * Once the callback sets the JWT, we poll for closure & re-verify.
+       */
+      async function doPopupAuth() {
+        return new Promise((resolve, reject) => {
+          const popup = window.open(
+            loginUrl.toString(),
+            'authPopup',
+            'width=600,height=700'
+          );
+          if (!popup) {
+            return reject(new Error('Popup blocked'));
+          }
+
+          const timer = setInterval(async () => {
+            // If popup closed, check if we have a valid session
+            if (popup.closed) {
+              clearInterval(timer);
+              try {
+                const data = await verifySession();
+                resolve(data);
+              } catch (err) {
+                reject(err);
+              }
+            }
+          }, 500);
+        });
+      }
+
+      /**
+       * The main login flow attempt:
+       * 1) Try verifying subdomain_jwt
+       * 2) If missing/expired, attempt SILENT iframe
+       * 3) If silent fails => fallback to POPUP
+       */
+      async function ensureLoggedIn() {
+        try {
+          const info = await verifySession();
+          // Already valid. Return info { userId, exp }
+          return info;
+        } catch (err) {
+          // Not logged in or token expired
+          console.log('No valid subdomain JWT, attempting silent auth...');
+        }
+
+        // Attempt silent auth in hidden iframe
+        try {
+          const info = await doSilentAuth();
+          console.log('Silent auth success:', info);
+          return info;
+        } catch (err) {
+          console.warn('Silent auth failed, opening popup...');
+        }
+
+        // Fallback to popup
+        try {
+//          const info = await doPopupAuth();
+//          console.log('Popup auth success:', info);
+//          return info;
+        } catch (err) {
+          console.error('Popup login failed or canceled:', err);
+          throw err;
+        }
+      }
+
+      /**
+       * Schedule an automatic token refresh a bit before the token expires.
+       * For example, refresh 1 minute before exp or halfway—your choice.
+       */
+      function scheduleAutoRefresh(exp) {
+        // Current time in seconds
+        const nowSeconds = Math.floor(Date.now() / 1000);
+        // Refresh 30 seconds before actual expiration, for safety
+        const refreshTime = Math.max((exp - 30) - nowSeconds, 1);
+        const refreshMs = refreshTime * 1000;
+
+        console.log('Scheduling refresh in', refreshTime, 'seconds');
+        setTimeout(async () => {
+          console.log('Attempting token refresh...');
+          try {
+            const info = await doSilentAuth();
+            console.log('Token silently refreshed:', info);
+            scheduleAutoRefresh(info.exp);
+          } catch (err) {
+            console.warn('Silent refresh failed, fallback to popup...');
+            // If silent refresh fails, we do popup to re-auth
+            try {
+//              const info = await doPopupAuth();
+//              console.log('Popup refresh success:', info);
+//              scheduleAutoRefresh(info.exp);
+            } catch (popErr) {
+              console.error('Popup refresh also failed. User not logged in:', popErr);
+            }
+          }
+        }, refreshMs);
+      }
+
+      // Now, run the main flow on page load
+      (async function main() {
+        try {
+console.log('Hello Magic App User!');
+          const info = await ensureLoggedIn();
+          console.log('User is logged in:', info);
+          // After we confirm a valid JWT, we schedule the refresh
+          scheduleAutoRefresh(info.exp);
+        } catch (err) {
+          console.error('User is not logged in and refused to log in:', err);
+          // Show a message or redirect if needed
+        }
+      })();
+
+    })();
+  </script>
+</body>
+</html>

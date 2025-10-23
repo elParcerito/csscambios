@@ -1,0 +1,390 @@
+<!doctype html>
+
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tutorial interactivo de CSS — index.html</title>
+  <style>
+    :root{
+      --bg: #0f172a;
+      --panel: #0b1220;
+      --accent: #7c3aed;
+      --text: #e6eef8;
+      --muted: #98a8c7;/* propiedades que actualizaremos con JS */
+  --padding: 16px;
+  --margin: 16px;
+  --border-width: 2px;
+  --border-radius: 12px;
+  --font-size: 20px;
+  --line-height: 1.4;
+  --letter-spacing: 0.2px;
+  --text-shadow: 0 0 0 rgba(0,0,0,0);
+  --box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  --bg-gradient: linear-gradient(135deg,#0f172a 0%, #071029 50%);
+  --rotate: 0deg;
+  --scale: 1;
+  --opacity: 1;
+  --filter: none;
+  --display: block;
+  --width: 100%;
+  --height: auto;
+}
+
+html,body{height:100%;margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg);color:var(--text)}
+
+.wrap{max-width:1200px;margin:24px auto;padding:20px;display:grid;grid-template-columns:360px 1fr;gap:20px}
+
+/* panel de controles */
+.panel{background:var(--panel);padding:14px;border-radius:12px;box-shadow:0 6px 20px rgba(2,6,23,0.6);overflow:auto;height:calc(100vh - 80px)}
+.panel h2{margin:0 0 12px 0;font-size:18px}
+.group{background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;margin-bottom:10px}
+.control{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.control label{width:140px;font-size:13px;color:var(--muted)}
+.control input[type=range]{flex:1}
+.control input[type=number]{width:70px}
+.control select{flex:1}
+.small{font-size:12px;color:var(--muted);margin-top:6px}
+.btn{display:inline-block;padding:8px 12px;border-radius:8px;background:var(--accent);color:white;border:none;cursor:pointer}
+
+/* área de vista/previews */
+.preview-area{padding:16px;display:flex;flex-direction:column;gap:16px}
+.preview{background:var(--bg-gradient);padding:var(--padding);border-radius:var(--border-radius);border:var(--border-width) solid rgba(255,255,255,0.06);box-shadow:var(--box-shadow);transform:rotate(var(--rotate)) scale(var(--scale));opacity:var(--opacity);filter:var(--filter);width:var(--width);height:var(--height);transition:all 300ms ease}
+
+.preview .title{font-size:calc(var(--font-size) + 6px);margin:0 0 6px 0}
+.preview p{margin:0;font-size:var(--font-size);line-height:var(--line-height);letter-spacing:var(--letter-spacing);text-shadow:var(--text-shadow)}
+
+/* ejemplos con display flex/grid */
+.box-examples{display:flex;gap:12px;flex-wrap:wrap}
+.example-card{background:rgba(255,255,255,0.03);padding:10px;border-radius:10px;min-width:140px;flex:1}
+.example-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+
+/* código generado */
+pre{background:#061022;padding:12px;border-radius:8px;color:#9fb7ff;overflow:auto;font-size:13px}
+
+/* responsive */
+@media(max-width:900px){.wrap{grid-template-columns:1fr;}.panel{height:auto}}
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <aside class="panel">
+      <h2>Panel interactivo — Ajusta para ver efectos</h2><div class="group">
+    <strong>Espaciado y tamaño</strong>
+    <div class="control"><label>Padding</label><input id="padding" type="range" min="0" max="80" value="16"><input id="paddingN" type="number" min="0" max="200" value="16"></div>
+    <div class="control"><label>Margin preview</label><input id="margin" type="range" min="0" max="80" value="16"><input id="marginN" type="number" min="0" max="200" value="16"></div>
+    <div class="control"><label>Fuente (px)</label><input id="fontSize" type="range" min="8" max="48" value="20"><input id="fontSizeN" type="number" min="8" max="72" value="20"></div>
+    <div class="control"><label>Line-height</label><input id="lineHeight" type="range" min="1" max="3" step="0.1" value="1.4"><input id="lineHeightN" type="number" min="1" max="3" step="0.1" value="1.4"></div>
+  </div>
+
+  <div class="group">
+    <strong>Bordes y sombras</strong>
+    <div class="control"><label>Borde (px)</label><input id="borderWidth" type="range" min="0" max="12" value="2"><input id="borderWidthN" type="number" min="0" max="50" value="2"></div>
+    <div class="control"><label>Radio (px)</label><input id="borderRadius" type="range" min="0" max="80" value="12"><input id="borderRadiusN" type="number" min="0" max="200" value="12"></div>
+    <div class="control"><label>Sombra (elev)</label><input id="shadowY" type="range" min="0" max="60" value="10"><input id="shadowYN" type="number" min="0" max="200" value="10"></div>
+    <div class="small">La sombra se actualiza combinando offsets y blur para simular elevación.</div>
+  </div>
+
+  <div class="group">
+    <strong>Transform & Visual</strong>
+    <div class="control"><label>Rotación</label><input id="rotate" type="range" min="-45" max="45" value="0"><input id="rotateN" type="number" min="-360" max="360" value="0"></div>
+    <div class="control"><label>Escala</label><input id="scale" type="range" min="0.4" max="1.6" step="0.01" value="1"><input id="scaleN" type="number" min="0.1" max="3" step="0.01" value="1"></div>
+    <div class="control"><label>Opacidad</label><input id="opacity" type="range" min="0" max="1" step="0.01" value="1"><input id="opacityN" type="number" min="0" max="1" step="0.01" value="1"></div>
+    <div class="control"><label>Filtro CSS</label>
+      <select id="filterSel">
+        <option value="none">none</option>
+        <option value="grayscale(100%)">grayscale(100%)</option>
+        <option value="blur(4px)">blur(4px)</option>
+        <option value="contrast(150%)">contrast(150%)</option>
+        <option value="saturate(140%)">saturate(140%)</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="group">
+    <strong>Tipografía</strong>
+    <div class="control"><label>Letter-spacing</label><input id="letter" type="range" min="-2" max="6" step="0.1" value="0.2"><input id="letterN" type="number" min="-5" max="20" step="0.1" value="0.2"></div>
+    <div class="control"><label>Text-shadow</label>
+      <select id="textShadowSel">
+        <option value="0 0 0 rgba(0,0,0,0)">none</option>
+        <option value="1px 1px 0 rgba(0,0,0,0.4)">sutil</option>
+        <option value="2px 2px 8px rgba(0,0,0,0.5)">profundo</option>
+        <option value="0 2px 6px rgba(124,58,237,0.3)">color</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="group">
+    <strong>Layout & display</strong>
+    <div class="control"><label>Display</label>
+      <select id="displaySel">
+        <option value="block">block</option>
+        <option value="inline-block">inline-block</option>
+        <option value="flex">flex</option>
+        <option value="grid">grid</option>
+      </select>
+    </div>
+    <div class="control"><label>Width (%)</label><input id="width" type="range" min="20" max="100" value="100"><input id="widthN" type="number" min="20" max="100" value="100"></div>
+    <div class="control"><label>Height (auto/px)</label><input id="height" type="text" value="auto" placeholder="auto or 200px"></div>
+  </div>
+
+  <div class="group">
+    <strong>Estados y animaciones</strong>
+    <div class="control"><label>Simular :hover</label><input id="simulateHover" type="checkbox"></div>
+    <div class="control"><label>Animación</label>
+      <select id="animSel">
+        <option value="none">none</option>
+        <option value="float">float (translateY)</option>
+        <option value="pulse">pulse (scale)</option>
+        <option value="spin">spin (rotate)</option>
+      </select>
+    </div>
+    <div class="small">Si activas animación, se añade una pequeña @keyframes aplicable al preview.</div>
+  </div>
+
+  <div style="display:flex;gap:8px;margin-top:8px">
+    <button id="reset" class="btn">Restablecer</button>
+    <button id="copyCss" class="btn" style="background:#0ea5a4">Copiar CSS</button>
+  </div>
+
+  <hr style="border:none;border-top:1px solid rgba(255,255,255,0.04);margin:12px 0">
+  <div>
+    <strong>Explicaciones rápidas</strong>
+    <p class="small">Cada control manipula una propiedad CSS. Justo abajo verás el resultado en un ejemplo real y el CSS generado.</p>
+  </div>
+</aside>
+
+<main class="preview-area">
+  <div class="preview" id="preview">
+    <h3 class="title">Título de ejemplo</h3>
+    <p id="previewText">Este es un texto de ejemplo. Ajusta los controles en la izquierda para experimentar: padding, borde, sombra, tipografía, transformaciones, display, filtros y más. Observa cómo cambia el layout y el aspecto.</p>
+  </div>
+
+  <div class="box-examples">
+    <div class="example-card">
+      <strong>Ejemplo de botón</strong>
+      <div id="btnExample" style="margin-top:8px;padding:8px;border-radius:8px;background:rgba(255,255,255,0.05);display:inline-block">Botón</div>
+    </div>
+    <div class="example-card">
+      <strong>Ejemplo de tarjetas (display grid)</strong>
+      <div class="example-grid" id="gridEx">
+        <div style="padding:8px;border-radius:6px;background:rgba(255,255,255,0.03)">1</div>
+        <div style="padding:8px;border-radius:6px;background:rgba(255,255,255,0.03)">2</div>
+        <div style="padding:8px;border-radius:6px;background:rgba(255,255,255,0.03)">3</div>
+      </div>
+    </div>
+    <div class="example-card">
+      <strong>Bloque de código</strong>
+      <pre id="generatedCss">/* CSS generado aparecerá aquí */</pre>
+    </div>
+  </div>
+</main>
+
+  </div>  <script>
+    /* helpers */
+    const $ = id => document.getElementById(id);
+    const syncRangeAndNumber = (r, n, cb) => {
+      r.addEventListener('input', ()=>{n.value = r.value; cb(r.value)});
+      n.addEventListener('input', ()=>{r.value = n.value; cb(n.value)});
+    };
+
+    const setRoot = (prop, value) => document.documentElement.style.setProperty(prop, value);
+
+    /* elementos */
+    const preview = $('preview');
+    const padding = $('padding'); const paddingN = $('paddingN');
+    const margin = $('margin'); const marginN = $('marginN');
+    const fontSize = $('fontSize'); const fontSizeN = $('fontSizeN');
+    const lineHeight = $('lineHeight'); const lineHeightN = $('lineHeightN');
+    const borderWidth = $('borderWidth'); const borderWidthN = $('borderWidthN');
+    const borderRadius = $('borderRadius'); const borderRadiusN = $('borderRadiusN');
+    const shadowY = $('shadowY'); const shadowYN = $('shadowYN');
+    const rotate = $('rotate'); const rotateN = $('rotateN');
+    const scale = $('scale'); const scaleN = $('scaleN');
+    const opacity = $('opacity'); const opacityN = $('opacityN');
+    const filterSel = $('filterSel');
+    const letter = $('letter'); const letterN = $('letterN');
+    const textShadowSel = $('textShadowSel');
+    const displaySel = $('displaySel');
+    const widthR = $('width'); const widthN = $('widthN');
+    const heightInput = $('height');
+    const simulateHover = $('simulateHover');
+    const animSel = $('animSel');
+    const btnExample = $('btnExample');
+    const gridEx = $('gridEx');
+    const generatedCss = $('generatedCss');
+    const reset = $('reset');
+    const copyCss = $('copyCss');
+
+    /* sincronia */
+    syncRangeAndNumber(padding,paddingN,v => setRoot('--padding', v+'px'));
+    syncRangeAndNumber(margin,marginN,v => setRoot('--margin', v+'px'));
+    syncRangeAndNumber(fontSize,fontSizeN,v => setRoot('--font-size', v+'px'));
+    syncRangeAndNumber(lineHeight,lineHeightN,v => setRoot('--line-height', v));
+    syncRangeAndNumber(borderWidth,borderWidthN,v => setRoot('--border-width', v+'px'));
+    syncRangeAndNumber(borderRadius,borderRadiusN,v => setRoot('--border-radius', v+'px'));
+    syncRangeAndNumber(shadowY,shadowYN,v => updateShadow(v));
+    syncRangeAndNumber(rotate,rotateN,v => setRoot('--rotate', v+'deg'));
+    syncRangeAndNumber(scale,scaleN,v => setRoot('--scale', v));
+    syncRangeAndNumber(opacity,opacityN,v => setRoot('--opacity', v));
+    syncRangeAndNumber(letter,letterN,v => setRoot('--letter-spacing', v+'px'));
+    syncRangeAndNumber(widthR,widthN,v => setRoot('--width', v+'%'));
+
+    filterSel.addEventListener('change',()=>setRoot('--filter', filterSel.value));
+    textShadowSel.addEventListener('change',()=>setRoot('--text-shadow', textShadowSel.value));
+    displaySel.addEventListener('change', ()=>{
+      const val = displaySel.value;
+      preview.style.display = val;
+      // show tips depending on display
+      if(val==='flex'){
+        preview.style.alignItems='center';
+      } else {
+        preview.style.alignItems='';
+      }
+      setRoot('--display', val);
+    });
+
+    heightInput.addEventListener('input', ()=>{
+      const v = heightInput.value.trim();
+      setRoot('--height', v===''? 'auto' : v);
+      preview.style.height = v;
+    });
+
+    simulateHover.addEventListener('change', ()=>{
+      if(simulateHover.checked){
+        preview.classList.add('hover-sim');
+        preview.style.transform = 'translateY(-6px) scale('+getComputedStyle(document.documentElement).getPropertyValue('--scale')+')';
+        preview.style.boxShadow = '0 20px 40px rgba(2,6,23,0.6)';
+      } else {
+        preview.classList.remove('hover-sim');
+        preview.style.transform = 'rotate('+getComputedStyle(document.documentElement).getPropertyValue('--rotate')+') scale('+getComputedStyle(document.documentElement).getPropertyValue('--scale')+')';
+        updateShadow(shadowY.value);
+      }
+    });
+
+    animSel.addEventListener('change', ()=>updateAnimation(animSel.value));
+
+    function updateShadow(y){
+      const blur = Math.round(y*1.8)+8;
+      const alpha = Math.min(0.6, 0.05 + y/100);
+      const css = `0 ${y}px ${blur}px rgba(2,6,23,${alpha})`;
+      setRoot('--box-shadow', css);
+      preview.style.boxShadow = css;
+    }
+
+    function updateAnimation(name){
+      // limpiar
+      preview.style.animation = '';
+      preview.style.transition = 'all 300ms ease';
+      const styleId = 'demo-anim';
+      const old = document.getElementById(styleId);
+      if(old) old.remove();
+      if(name==='none') return;
+      const style = document.createElement('style'); style.id = styleId;
+      if(name==='float'){
+        style.textContent = `@keyframes floatDemo{0%{transform:translateY(0)}50%{transform:translateY(-10px)}100%{transform:translateY(0)}}`;
+        document.head.appendChild(style);
+        preview.style.animation = 'floatDemo 3s ease-in-out infinite';
+      } else if(name==='pulse'){
+        style.textContent = `@keyframes pulseDemo{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}`;
+        document.head.appendChild(style);
+        preview.style.animation = 'pulseDemo 2.5s ease-in-out infinite';
+      } else if(name==='spin'){
+        style.textContent = `@keyframes spinDemo{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}`;
+        document.head.appendChild(style);
+        preview.style.animation = 'spinDemo 8s linear infinite';
+      }
+    }
+
+    // actualizar CSS generado y mostrarlo
+    function updateGeneratedCSS(){
+      const styleObj = {
+        padding: getComputedStyle(preview).padding,
+        border: `${getComputedStyle(document.documentElement).getPropertyValue('--border-width')} solid rgba(255,255,255,0.06)`,
+        'border-radius': getComputedStyle(preview).borderRadius,
+        'box-shadow': getComputedStyle(preview).boxShadow,
+        transform: getComputedStyle(preview).transform,
+        opacity: getComputedStyle(preview).opacity,
+        filter: getComputedStyle(preview).filter,
+        display: getComputedStyle(preview).display,
+        width: getComputedStyle(preview).width,
+        height: getComputedStyle(preview).height,
+        'font-size': getComputedStyle(preview).fontSize,
+        'line-height': getComputedStyle(preview).lineHeight,
+        'letter-spacing': getComputedStyle(preview).letterSpacing,
+        'text-shadow': getComputedStyle(preview).textShadow
+      };
+      let cssText = `.mi-clase-ejemplo{\n`;
+      for(const k in styleObj){
+        cssText += `  ${k}: ${styleObj[k]};\n`;
+      }
+      cssText += `}\n`;
+      generatedCss.textContent = cssText;
+    }
+
+    // Copiar CSS
+    copyCss.addEventListener('click', ()=>{
+      navigator.clipboard.writeText(generatedCss.textContent).then(()=>{
+        copyCss.textContent = 'Copiado!'; setTimeout(()=>copyCss.textContent='Copiar CSS',900);
+      });
+    });
+
+    reset.addEventListener('click', ()=>location.reload());
+
+    // observador para actualizar el CSS mostrado cada vez que cambie algo
+    const ro = new MutationObserver(()=>updateGeneratedCSS());
+    ro.observe(preview, {attributes:true,childList:true,subtree:true,characterData:true});
+
+    // llamadas iniciales para aplicar valores por defecto
+    updateShadow(shadowY.value);
+    setRoot('--padding', padding.value+'px');
+    setRoot('--margin', margin.value+'px');
+    setRoot('--font-size', fontSize.value+'px');
+    setRoot('--line-height', lineHeight.value);
+    setRoot('--border-width', borderWidth.value+'px');
+    setRoot('--border-radius', borderRadius.value+'px');
+    setRoot('--opacity', opacity.value);
+    setRoot('--letter-spacing', letter.value+'px');
+    setRoot('--filter', filterSel.value);
+    setRoot('--text-shadow', textShadowSel.value);
+    setRoot('--width', widthR.value + '%');
+
+    // observar cambios globales de variables de CSS (cuando cambian via setRoot)
+    const varObserver = new MutationObserver(()=>updateGeneratedCSS());
+    varObserver.observe(document.documentElement, {attributes:true,attributeFilter:['style']});
+
+    // actualizar el preview visual (usamos una pequeña función que lee variables y aplica)
+    function applyVarsToPreview(){
+      const s = getComputedStyle(document.documentElement);
+      preview.style.padding = s.getPropertyValue('--padding');
+      preview.style.borderRadius = s.getPropertyValue('--border-radius');
+      preview.style.borderWidth = s.getPropertyValue('--border-width');
+      preview.style.fontSize = s.getPropertyValue('--font-size');
+      preview.style.lineHeight = s.getPropertyValue('--line-height');
+      preview.style.letterSpacing = s.getPropertyValue('--letter-spacing');
+      preview.style.opacity = s.getPropertyValue('--opacity');
+      preview.style.filter = s.getPropertyValue('--filter');
+      // transform compuesto: rotation + scale
+      preview.style.transform = `rotate(${s.getPropertyValue('--rotate')}) scale(${s.getPropertyValue('--scale')})`;
+      // box shadow ya se actualiza en updateShadow
+      updateGeneratedCSS();
+    }
+
+    // Repetir llamado breve para mantener sincronía
+    setInterval(applyVarsToPreview, 120);
+
+    // accesibilidad: teclado para simular hover en preview
+    preview.addEventListener('mouseenter', ()=>{ if(!simulateHover.checked) preview.style.transform = preview.style.transform + ' translateY(-4px)';});
+    preview.addEventListener('mouseleave', ()=>{ if(!simulateHover.checked) applyVarsToPreview();});
+
+    // explicación adicional: doble click en el preview cambia el texto
+    preview.addEventListener('dblclick', ()=>{
+      const t = prompt('Editar texto del preview (doble click para editar)', document.getElementById('previewText').textContent);
+      if(t!==null) document.getElementById('previewText').textContent = t;
+    });
+
+    // primera actualización del CSS generado
+    updateGeneratedCSS();
+  </script></body>
+</html>
