@@ -1,0 +1,724 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Laboratorio CSS — Editor Login & Botón (todo en 1)</title>
+  <style>
+    /* ---------- estilos generales de la página ---------- */
+    :root{
+      --bg: #071022;
+      --panel: rgba(255,255,255,0.04);
+      --card-bg: linear-gradient(180deg,#0f172a,#071022);
+      --accent: #7c3aed;
+      --glass: rgba(255,255,255,0.04);
+      --text: #e6eef8;
+      --muted: #9fb2d1;
+      --mono: "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    html,body{height:100%;margin:0;font-family:var(--mono);background:
+      radial-gradient(600px 300px at 10% 20%, rgba(124,58,237,0.12), transparent 10%),
+      radial-gradient(500px 300px at 90% 80%, rgba(14,165,164,0.06), transparent 10%),
+      var(--bg);color:var(--text);-webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+
+    .container{max-width:1200px;margin:20px auto;padding:18px;display:grid;grid-template-columns:360px 1fr;gap:18px;align-items:start}
+    header{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+    h1{font-size:18px;margin:0;color:var(--text)}
+    .subtitle{font-size:13px;color:var(--muted)}
+
+    /* panel de controles (izquierda) */
+    .panel{background:var(--panel);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 8px 30px rgba(2,6,23,0.6);max-height:calc(100vh - 80px);overflow:auto}
+    .section-title{font-size:13px;color:var(--muted);margin:8px 0}
+    .group{background:rgba(255,255,255,0.02);padding:10px;border-radius:10px;margin-bottom:10px}
+    .control{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+    .control label{width:140px;font-size:13px;color:var(--muted)}
+    .control input[type=range]{flex:1}
+    .control input[type=number]{width:70px}
+    .control input[type=color]{width:44px;height:34px;padding:0;border:0;background:transparent;cursor:pointer}
+    .small{font-size:12px;color:var(--muted);margin-top:6px}
+
+    .btn{display:inline-block;padding:8px 12px;border-radius:8px;background:var(--accent);color:white;border:none;cursor:pointer}
+    .btn.secondary{background:#0ea5a4}
+
+    /* área de preview (derecha) */
+    .preview-area{padding:14px;display:flex;flex-direction:column;gap:14px}
+    .previews-row{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
+    .card-preview, .btn-preview {background:var(--card-bg);padding:18px;border-radius:14px;border:var(--card-border,2px) solid rgba(255,255,255,0.03);box-shadow:var(--card-shadow,0 10px 30px rgba(0,0,0,0.5));transition:all 300ms ease;min-width:280px;max-width:520px}
+
+    /* login card por defecto (será sobreescrito por JS con variables inline) */
+    .login-card{width:360px;padding:24px;border-radius:12px;background:linear-gradient(180deg,#0b1220,#0f172a);color:var(--text)}
+    .login-card h2{margin:0 0 10px;font-size:20px}
+    .login-card .desc{font-size:13px;color:var(--muted);margin-bottom:16px}
+    .login-card input{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:inherit;margin-bottom:10px;box-sizing:border-box}
+    .login-card input::placeholder{color:rgba(255,255,255,0.35)}
+    .login-card .actions{display:flex;gap:8px;align-items:center}
+    .login-card .actions .remember{font-size:13px;color:var(--muted)}
+    .login-card .help{margin-top:10px;font-size:12px;color:var(--muted)}
+
+    /* boton principal preview - se puede editar */
+    .btn-primary{display:inline-block;padding:10px 16px;border-radius:8px;border:0;background:var(--accent);color:white;font-weight:600;cursor:pointer;transition:all 200ms ease}
+
+    /* area que muestra CSS generado y botones para copiar */
+    .code-box{background:#041028;padding:12px;border-radius:8px;color:#9fb7ff;overflow:auto;font-size:13px;max-height:320px}
+    .controls-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+
+    /* responsive */
+    @media(max-width:1000px){.container{grid-template-columns:1fr;}.panel{max-height:none}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>Laboratorio CSS — Editor: Login & Botón</h1>
+        <div class="subtitle">Edita visualmente el Login y el Botón. Copia el CSS generado abajo.</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button id="resetAll" class="btn secondary">Restablecer todo</button>
+        <button id="copyAll" class="btn">Copiar CSS combinando</button>
+      </div>
+    </header>
+
+    <!-- PANEL CONTROLES -->
+    <aside class="panel" aria-label="Controles">
+      <!-- Selección de componente -->
+      <div class="group">
+        <strong class="section-title">Seleccionar editor</strong>
+        <div style="display:flex;gap:8px">
+          <button id="editLogin" class="btn">Editar Login</button>
+          <button id="editBtn" class="btn">Editar Botón</button>
+        </div>
+        <div class="small">Usa estos botones para enfocar los controles en el componente que quieres modificar.</div>
+      </div>
+
+      <!-- CONTROLES COMUNES -->
+      <div class="group">
+        <strong class="section-title">Controles generales (aplican al componente seleccionado)</strong>
+
+        <div class="control"><label>Fondo</label>
+          <input type="color" id="bgColor" value="#0f172a">
+          <select id="bgType" style="flex:1">
+            <option value="solid">Sólido</option>
+            <option value="linear">Linear gradient</option>
+            <option value="radial">Radial gradient</option>
+          </select>
+        </div>
+
+        <div class="control"><label>Color texto</label><input type="color" id="textColor" value="#e6eef8"></div>
+
+        <div class="control"><label>Padding</label><input id="compPadding" type="range" min="0" max="80" value="24"><input id="compPaddingN" type="number" min="0" max="200" value="24"></div>
+
+        <div class="control"><label>Borde width</label><input id="compBorderW" type="range" min="0" max="20" value="0"><input id="compBorderWN" type="number" min="0" max="80" value="0"></div>
+
+        <div class="control"><label>Borde estilo</label>
+          <select id="compBorderStyle" style="flex:1">
+            <option>solid</option><option>dashed</option><option>dotted</option><option>double</option><option>none</option>
+          </select>
+        </div>
+
+        <div class="control"><label>Borde color</label><input id="compBorderColor" type="color" value="#ffffff"></div>
+
+        <div class="control"><label>Border radius</label><input id="compRadius" type="range" min="0" max="120" value="12"><input id="compRadiusN" type="number" min="0" max="240" value="12"></div>
+
+        <div class="control"><label>Sombra offset Y</label><input id="compShadowY" type="range" min="0" max="80" value="14"><input id="compShadowYN" type="number" min="0" max="200" value="14"></div>
+
+        <div class="control"><label>Sombra blur</label><input id="compShadowBlur" type="range" min="0" max="120" value="30"><input id="compShadowBlurN" type="number" min="0" max="300" value="30"></div>
+
+        <div class="control"><label>Shadow color</label><input id="compShadowColor" type="color" value="#000000"></div>
+
+        <div class="control"><label>Inset?</label><input id="compShadowInset" type="checkbox"></div>
+
+        <div class="control"><label>Opacity</label><input id="compOpacity" type="range" min="0.1" max="1" step="0.01" value="1"><input id="compOpacityN" type="number" min="0.1" max="1" step="0.01" value="1"></div>
+
+        <div class="control"><label>Width (px)</label><input id="compWidth" type="number" min="80" max="1200" value="360"></div>
+        <div class="control"><label>Max-width (%)</label><input id="compMaxW" type="number" min="20" max="100" value="100"></div>
+
+        <div class="control"><label>Transform rotate</label><input id="compRotate" type="range" min="-45" max="45" value="0"><input id="compRotateN" type="number" min="-360" max="360" value="0"></div>
+        <div class="control"><label>Transform scale</label><input id="compScale" type="range" min="0.4" max="2.2" step="0.01" value="1"><input id="compScaleN" type="number" min="0.1" max="3" step="0.01" value="1"></div>
+
+        <div class="control"><label>Filter CSS</label>
+          <select id="compFilter" style="flex:1">
+            <option value="none">none</option>
+            <option value="grayscale(100%)">grayscale(100%)</option>
+            <option value="blur(4px)">blur(4px)</option>
+            <option value="contrast(150%)">contrast(150%)</option>
+            <option value="saturate(130%)">saturate(130%)</option>
+          </select>
+        </div>
+
+        <div class="control"><label>Transition</label><input id="compTransition" type="text" value="all 300ms ease" placeholder="ej: all 300ms ease" style="flex:1"></div>
+
+        <div class="control"><label>Font family</label>
+          <select id="compFont" style="flex:1">
+            <option value="Inter, system-ui, Arial, sans-serif">Inter / Sans</option>
+            <option value="Georgia, serif">Georgia (serif)</option>
+            <option value="'Courier New', monospace">Courier (mono)</option>
+            <option value="'Segoe UI', Tahoma, sans-serif">Segoe UI</option>
+          </select>
+        </div>
+
+        <div class="control"><label>Font size (px)</label><input id="compFontSize" type="number" min="8" max="72" value="16"></div>
+
+        <div class="control"><label>Letter spacing (px)</label><input id="compLetter" type="number" min="-5" max="10" step="0.1" value="0"></div>
+
+        <div class="control"><label>Text shadow</label>
+          <select id="compTextShadow" style="flex:1">
+            <option value="none">none</option>
+            <option value="1px 1px 0 rgba(0,0,0,0.4)">sutil</option>
+            <option value="2px 2px 6px rgba(0,0,0,0.6)">profundo</option>
+            <option value="0 4px 10px rgba(124,58,237,0.18)">accent</option>
+          </select>
+        </div>
+
+        <div class="small">Consejo: selecciona "Editar Login" o "Editar Botón" para enfocar los controles en ese componente.</div>
+      </div>
+
+      <!-- CONTROLES ESPECÍFICOS PARA BOTÓN -->
+      <div id="btnControls" class="group" style="display:none">
+        <strong class="section-title">Controles específicos — Botón</strong>
+        <div class="control"><label>Texto del botón</label><input id="btnText" type="text" placeholder="Entrar" value="Entrar"></div>
+        <div class="control"><label>Color fondo</label><input id="btnBg" type="color" value="#7c3aed"></div>
+        <div class="control"><label>Color texto</label><input id="btnColor" type="color" value="#ffffff"></div>
+        <div class="control"><label>Padding (x/y)</label><input id="btnPadX" type="number" min="4" max="80" value="16"><input id="btnPadY" type="number" min="4" max="80" value="10"></div>
+        <div class="control"><label>Border radius (px)</label><input id="btnRadius" type="range" min="0" max="80" value="8"><input id="btnRadiusN" type="number" min="0" max="160" value="8"></div>
+        <div class="control"><label>Border (px)</label><input id="btnBorderW" type="number" min="0" max="16" value="0"><select id="btnBorderStyle"><option>solid</option><option>dashed</option><option>dotted</option></select><input id="btnBorderColor" type="color" value="#ffffff"></div>
+        <div class="control"><label>Hover effect</label>
+          <select id="btnHover" style="flex:1">
+            <option value="none">none</option>
+            <option value="lift">lift (translateY)</option>
+            <option value="grow">grow (scale)</option>
+            <option value="glow">glow (shadow)</option>
+            <option value="invert">invert (bg/text)</option>
+          </select>
+        </div>
+        <div class="control"><label>Text transform</label><select id="btnTransform" style="flex:1"><option value="none">none</option><option value="uppercase">uppercase</option><option value="lowercase">lowercase</option></select></div>
+        <div class="control"><label>Letter spacing</label><input id="btnLetter" type="number" min="-5" max="10" step="0.1" value="0.2"></div>
+      </div>
+
+      <!-- CONTROLES ESPECÍFICOS PARA LOGIN -->
+      <div id="loginControls" class="group">
+        <strong class="section-title">Controles específicos — Login</strong>
+
+        <div class="control"><label>Título</label><input id="loginTitle" type="text" value="Iniciar Sesión"></div>
+        <div class="control"><label>Descripción</label><input id="loginDesc" type="text" value="Bienvenido — ingresa tus datos"></div>
+        <div class="control"><label>Placeholder usuario</label><input id="phUser" type="text" value="usuario@correo.com"></div>
+        <div class="control"><label>Placeholder pass</label><input id="phPass" type="text" value="••••••••"></div>
+        <div class="control"><label>Input bg</label><input id="inputBg" type="color" value="#0f172a"></div>
+        <div class="control"><label>Input border color</label><input id="inputBorderColor" type="color" value="#2a3a4a"></div>
+        <div class="control"><label>Input border width</label><input id="inputBorderW" type="number" min="0" max="10" value="1"></div>
+        <div class="control"><label>Input radius</label><input id="inputRadius" type="range" min="0" max="48" value="8"><input id="inputRadiusN" type="number" min="0" max="160" value="8"></div>
+
+        <div class="control"><label>Show inputs inline?</label><input id="inputInline" type="checkbox"></div>
+
+        <div class="small">Estos controles afectan los campos dentro del cuadro de Login.</div>
+      </div>
+
+      <div style="height:18px"></div>
+    </aside>
+
+    <!-- PREVIEWS Y CSS GENERATED -->
+    <main class="preview-area">
+      <div class="previews-row">
+        <div class="card-preview">
+          <strong style="display:block;margin-bottom:10px">Vista: Login (editable)</strong>
+          <div id="previewLogin" class="login-card" aria-live="polite">
+            <h2 id="pvTitle">Iniciar Sesión</h2>
+            <div class="desc" id="pvDesc">Bienvenido — ingresa tus datos</div>
+            <input id="pvUser" placeholder="usuario@correo.com">
+            <input id="pvPass" placeholder="••••••••">
+            <div class="actions">
+              <button id="pvBtn" class="btn-primary">Entrar</button>
+              <div style="flex:1"></div>
+            </div>
+            <div class="help">¿Olvidaste tu contraseña? <a href="#" style="color:var(--accent)">Recuperar</a></div>
+          </div>
+        </div>
+
+        <div class="btn-preview">
+          <strong style="display:block;margin-bottom:10px">Vista: Botón (editable)</strong>
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+            <button id="previewBtn" class="btn-primary">Entrar</button>
+            <button id="previewBtn2" class="btn-primary">Secundario</button>
+            <div style="margin-left:auto;color:var(--muted);font-size:12px">Prueba hover o activa animación</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- controles rápidos para animaciones / hover sim -->
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <label style="font-size:13px;color:var(--muted)">Simular :hover en preview</label>
+        <input id="simulateHover" type="checkbox">
+        <label style="font-size:13px;color:var(--muted)">Agregar animación</label>
+        <select id="globalAnim"><option value="none">none</option><option value="pulse">pulse</option><option value="float">float</option><option value="spin">spin</option></select>
+      </div>
+
+      <!-- CSS generado para Login -->
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <strong>CSS generado — Login</strong>
+          <div style="display:flex;gap:8px">
+            <button id="copyLoginCss" class="btn secondary">Copiar CSS Login</button>
+            <button id="downloadLoginCss" class="btn">Descargar .css</button>
+          </div>
+        </div>
+        <pre id="loginCss" class="code-box">/* CSS generado para .login-card */</pre>
+      </div>
+
+      <!-- CSS generado para Botón -->
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <strong>CSS generado — Botón</strong>
+          <div style="display:flex;gap:8px">
+            <button id="copyBtnCss" class="btn secondary">Copiar CSS Botón</button>
+            <button id="downloadBtnCss" class="btn">Descargar .css</button>
+          </div>
+        </div>
+        <pre id="btnCss" class="code-box">/* CSS generado para .btn-primary */</pre>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    /* ---------- helpers ---------- */
+    const $ = id => document.getElementById(id);
+    const toPx = v => (v && !String(v).endsWith('px')) ? v + 'px' : v;
+
+    // focus state: 'login' or 'button'
+    let focused = 'login';
+
+    // UI elements grouped
+    const ui = {
+      // common
+      bgColor: $('bgColor'), bgType: $('bgType'), textColor: $('textColor'),
+      compPadding: $('compPadding'), compPaddingN: $('compPaddingN'),
+      compBorderW: $('compBorderW'), compBorderWN: $('compBorderWN'),
+      compBorderStyle: $('compBorderStyle'), compBorderColor: $('compBorderColor'),
+      compRadius: $('compRadius'), compRadiusN: $('compRadiusN'),
+      compShadowY: $('compShadowY'), compShadowYN: $('compShadowYN'),
+      compShadowBlur: $('compShadowBlur'), compShadowBlurN: $('compShadowBlurN'),
+      compShadowColor: $('compShadowColor'), compShadowInset: $('compShadowInset'),
+      compOpacity: $('compOpacity'), compOpacityN: $('compOpacityN'),
+      compWidth: $('compWidth'), compMaxW: $('compMaxW'),
+      compRotate: $('compRotate'), compRotateN: $('compRotateN'),
+      compScale: $('compScale'), compScaleN: $('compScaleN'),
+      compFilter: $('compFilter'), compTransition: $('compTransition'),
+      compFont: $('compFont'), compFontSize: $('compFontSize'), compLetter: $('compLetter'),
+      compTextShadow: $('compTextShadow'),
+
+      // button specific
+      btnControls: $('btnControls'), btnText: $('btnText'), btnBg: $('btnBg'), btnColor: $('btnColor'),
+      btnPadX: $('btnPadX'), btnPadY: $('btnPadY'), btnRadius: $('btnRadius'), btnRadiusN: $('btnRadiusN'),
+      btnBorderW: $('btnBorderW'), btnBorderStyle: $('btnBorderStyle'), btnBorderColor: $('btnBorderColor'),
+      btnHover: $('btnHover'), btnTransform: $('btnTransform'), btnLetter: $('btnLetter'),
+
+      // login specific
+      loginControls: $('loginControls'), loginTitle: $('loginTitle'), loginDesc: $('loginDesc'),
+      phUser: $('phUser'), phPass: $('phPass'),
+      inputBg: $('inputBg'), inputBorderColor: $('inputBorderColor'), inputBorderW: $('inputBorderW'),
+      inputRadius: $('inputRadius'), inputRadiusN: $('inputRadiusN'), inputInline: $('inputInline'),
+
+      // preview elements
+      previewLogin: $('previewLogin'), pvTitle: $('pvTitle'), pvDesc: $('pvDesc'),
+      pvUser: $('pvUser'), pvPass: $('pvPass'), pvBtn: $('pvBtn'),
+      previewBtn: $('previewBtn'), previewBtn2: $('previewBtn2'),
+
+      // copy / css boxes
+      loginCss: $('loginCss'), btnCss: $('btnCss'),
+      copyLoginCss: $('copyLoginCss'), copyBtnCss: $('copyBtnCss'),
+      downloadLoginCss: $('downloadLoginCss'), downloadBtnCss: $('downloadBtnCss'),
+      copyAll: $('copyAll'), resetAll: $('resetAll'),
+
+      // editors
+      editLogin: $('editLogin'), editBtn: $('editBtn'),
+      simulateHover: $('simulateHover'), globalAnim: $('globalAnim')
+    };
+
+    // inicializar listeners de sync rango/numero
+    function syncRangeNumber(range, number) {
+      range.addEventListener('input', ()=>{ number.value = range.value; updateFocused(); });
+      number.addEventListener('input', ()=>{ range.value = number.value; updateFocused(); });
+    }
+
+    // sincronizar muchos controles
+    syncRangeNumber(ui.compPadding, ui.compPaddingN);
+    syncRangeNumber(ui.compBorderW, ui.compBorderWN);
+    syncRangeNumber(ui.compRadius, ui.compRadiusN);
+    syncRangeNumber(ui.compShadowY, ui.compShadowYN);
+    syncRangeNumber(ui.compShadowBlur, ui.compShadowBlurN);
+    syncRangeNumber(ui.compOpacity, ui.compOpacityN);
+    syncRangeNumber(ui.compRotate, ui.compRotateN);
+    syncRangeNumber(ui.compScale, ui.compScaleN);
+    syncRangeNumber(ui.btnRadius, ui.btnRadiusN);
+    syncRangeNumber(ui.inputRadius, ui.inputRadiusN);
+
+    // focus buttons
+    ui.editLogin.addEventListener('click', ()=>{
+      focused = 'login';
+      ui.btnControls.style.display = 'none';
+      ui.loginControls.style.display = 'block';
+      highlightActiveEditor();
+    });
+    ui.editBtn.addEventListener('click', ()=>{
+      focused = 'button';
+      ui.btnControls.style.display = 'block';
+      ui.loginControls.style.display = 'block'; // keep login controls visible too but focus applies to selected component
+      highlightActiveEditor();
+    });
+
+    function highlightActiveEditor(){
+      ui.editLogin.classList.toggle('active', focused==='login');
+      ui.editBtn.classList.toggle('active', focused==='button');
+    }
+
+    // reset defaults
+    ui.resetAll.addEventListener('click', ()=>{
+      location.reload();
+    });
+
+    // updateFocused aplica los valores actuales al componente seleccionado (login o boton)
+    function updateFocused(){
+      if(focused === 'login') updateLogin();
+      if(focused === 'button') updateButton();
+      // siempre actualizar ambos CSS
+      generateLoginCss();
+      generateBtnCss();
+    }
+
+    // función para generar background según tipo
+    function buildBackground(type, colorVal){
+      if(type === 'solid') return colorVal;
+      if(type === 'linear') return `linear-gradient(135deg, ${colorVal}, rgba(0,0,0,0.25))`;
+      if(type === 'radial') return `radial-gradient(circle at 10% 20%, ${colorVal}, rgba(0,0,0,0.35))`;
+      return colorVal;
+    }
+
+    /* ------------------ actualizar Login ------------------ */
+    function updateLogin(){
+      const bg = buildBackground(ui.bgType.value, ui.bgColor.value);
+      const text = ui.textColor.value;
+      const padding = ui.compPadding.value + 'px';
+      const bw = ui.compBorderW.value + 'px';
+      const bstyle = ui.compBorderStyle.value;
+      const bcolor = ui.compBorderColor.value;
+      const radius = ui.compRadius.value + 'px';
+      const shadowY = ui.compShadowY.value;
+      const shadowBlur = ui.compShadowBlur.value;
+      const shadowColor = ui.compShadowColor.value;
+      const inset = ui.compShadowInset.checked ? 'inset' : '';
+      const opacity = ui.compOpacity.value;
+      const width = ui.compWidth.value + 'px';
+      const maxw = ui.compMaxW.value + '%';
+      const rotate = ui.compRotate.value + 'deg';
+      const scale = ui.compScale.value;
+      const filter = ui.compFilter.value;
+      const transition = ui.compTransition.value;
+      const font = ui.compFont.value;
+      const fontSize = ui.compFontSize.value + 'px';
+      const letter = ui.compLetter.value + 'px';
+      const textShadow = ui.compTextShadow.value;
+
+      // aplicar estilos inline al previewLogin
+      const el = ui.previewLogin;
+      el.style.background = bg;
+      el.style.color = text;
+      el.style.padding = padding;
+      el.style.border = `${bw} ${bstyle} ${bcolor}`;
+      el.style.borderRadius = radius;
+      el.style.boxShadow = `${inset} 0 ${shadowY}px ${shadowBlur}px ${shadowColor}`;
+      el.style.opacity = opacity;
+      el.style.width = width;
+      el.style.maxWidth = maxw;
+      el.style.transform = `rotate(${rotate}) scale(${scale})`;
+      el.style.filter = filter;
+      el.style.transition = transition;
+      el.style.fontFamily = font;
+      el.style.fontSize = fontSize;
+      el.style.letterSpacing = letter;
+      el.style.textShadow = textShadow;
+
+      // actualizar contenido textual
+      ui.pvTitle.textContent = ui.loginTitle.value;
+      ui.pvDesc.textContent = ui.loginDesc.value;
+      ui.pvUser.placeholder = ui.phUser.value;
+      ui.pvPass.placeholder = ui.phPass.value;
+
+      // inputs styling (dentro del login)
+      const inputs = el.querySelectorAll('input');
+      inputs.forEach(i=>{
+        i.style.background = ui.inputBg.value;
+        i.style.border = `${ui.inputBorderW.value}px solid ${ui.inputBorderColor.value}`;
+        i.style.borderRadius = ui.inputRadius.value + 'px';
+        if(ui.inputInline.checked){
+          i.style.display = 'inline-block';
+          i.style.width = 'calc(50% - 8px)';
+        }else{
+          i.style.display = 'block';
+          i.style.width = '100%';
+        }
+      });
+
+      // btn del login toma algunos presets del botón principal
+      ui.pvBtn.textContent = ui.btnText.value;
+      // aplicar estilos del botón preview
+      applyBtnStylesTo(ui.pvBtn);
+      applyBtnStylesTo(ui.previewBtn);
+      applyBtnStylesTo(ui.previewBtn2);
+    }
+
+    /* ------------------ actualizar Botón ------------------ */
+    function applyBtnStylesTo(btnEl){
+      const bg = ui.btnBg.value;
+      const color = ui.btnColor.value;
+      const padX = ui.btnPadX.value + 'px';
+      const padY = ui.btnPadY.value + 'px';
+      const radius = ui.btnRadius.value + 'px';
+      const borderW = ui.btnBorderW.value + 'px';
+      const borderStyle = ui.btnBorderStyle.value || 'solid';
+      const borderColor = ui.btnBorderColor.value;
+      const transformText = ui.btnTransform.value;
+      const letter = ui.btnLetter.value + 'px';
+
+      btnEl.style.background = bg;
+      btnEl.style.color = color;
+      btnEl.style.padding = `${padY} ${padX}`;
+      btnEl.style.borderRadius = radius;
+      btnEl.style.border = `${borderW} ${borderStyle} ${borderColor}`;
+      btnEl.style.textTransform = transformText;
+      btnEl.style.letterSpacing = letter;
+      btnEl.style.transition = 'all 220ms ease';
+    }
+
+    function updateButton(){
+      // simplemente aplicar estilos al previewBtn y al boton dentro del login
+      ui.previewBtn.textContent = ui.btnText.value;
+      applyBtnStylesTo(ui.previewBtn);
+      applyBtnStylesTo(ui.pvBtn);
+      applyBtnStylesTo(ui.previewBtn2);
+
+      // hover effect build
+      const hoverType = ui.btnHover.value;
+      // limpiar :hover inline modificando dataset
+      [ui.previewBtn, ui.pvBtn, ui.previewBtn2].forEach(b=>{
+        b.dataset.hover = hoverType;
+        b.onmouseover = b.onmouseout = null;
+        // remove style overrides
+        b.style.boxShadow = '';
+        b.style.transform = '';
+      });
+
+      if(hoverType === 'lift'){
+        [ui.previewBtn, ui.pvBtn, ui.previewBtn2].forEach(b=>{
+          b.onmouseover = ()=> b.style.transform = 'translateY(-6px)';
+          b.onmouseout = ()=> b.style.transform = '';
+        });
+      } else if(hoverType === 'grow'){
+        [ui.previewBtn, ui.pvBtn, ui.previewBtn2].forEach(b=>{
+          b.onmouseover = ()=> b.style.transform = 'scale(1.05)';
+          b.onmouseout = ()=> b.style.transform = '';
+        });
+      } else if(hoverType === 'glow'){
+        [ui.previewBtn, ui.pvBtn, ui.previewBtn2].forEach(b=>{
+          b.onmouseover = ()=> b.style.boxShadow = `0 8px 30px ${ui.btnBg.value}66`;
+          b.onmouseout = ()=> b.style.boxShadow = '';
+        });
+      } else if(hoverType === 'invert'){
+        [ui.previewBtn, ui.pvBtn, ui.previewBtn2].forEach(b=>{
+          b.onmouseover = ()=> {
+            const currBg = window.getComputedStyle(b).backgroundColor;
+            const currColor = window.getComputedStyle(b).color;
+            b.style.background = currColor;
+            b.style.color = currBg;
+          };
+          b.onmouseout = ()=> { updateButton(); };
+        });
+      }
+    }
+
+    // attach many event listeners to controls to update in real-time
+    const allControls = document.querySelectorAll('.panel input, .panel select, .panel textarea');
+    allControls.forEach(c=> c.addEventListener('input', updateFocused));
+    allControls.forEach(c=> c.addEventListener('change', updateFocused));
+
+    // simulate hover checkbox
+    ui.simulateHover.addEventListener('change', ()=>{
+      const sim = ui.simulateHover.checked;
+      if(sim){
+        // trigger hover state artificially
+        const ev = new Event('mouseover');
+        ui.previewBtn.dispatchEvent(ev);
+        ui.pvBtn.dispatchEvent(ev);
+      } else {
+        const ev2 = new Event('mouseout');
+        ui.previewBtn.dispatchEvent(ev2);
+        ui.pvBtn.dispatchEvent(ev2);
+        // reapply to reset
+        updateButton();
+      }
+    });
+
+    // animations (global)
+    ui.globalAnim.addEventListener('change', ()=>{
+      const val = ui.globalAnim.value;
+      // remove old style tag
+      const old = document.getElementById('lab-anim');
+      if(old) old.remove();
+      if(val === 'none') return;
+      const style = document.createElement('style'); style.id = 'lab-anim';
+      if(val === 'pulse'){
+        style.textContent = `@keyframes lab-pulse{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1)}} .login-card, .btn-primary{animation:lab-pulse 3s ease-in-out infinite}`;
+      } else if(val === 'float'){
+        style.textContent = `@keyframes lab-float{0%{transform:translateY(0)}50%{transform:translateY(-8px)}100%{transform:translateY(0)}} .login-card{animation:lab-float 4s ease-in-out infinite}`;
+      } else if(val === 'spin'){
+        style.textContent = `@keyframes lab-spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}} .btn-primary{animation:lab-spin 6s linear infinite}`;
+      }
+      document.head.appendChild(style);
+    });
+
+    /* ------------------ Generar CSS como texto para copiar ------------------ */
+    function generateLoginCss(){
+      // extraer valores actuales de UI y construir CSS string
+      const bg = ui.bgType.value === 'solid' ? ui.bgColor.value : ui.bgType.value === 'linear' ? `linear-gradient(135deg, ${ui.bgColor.value}, rgba(0,0,0,0.25))` : `radial-gradient(circle at 10% 20%, ${ui.bgColor.value}, rgba(0,0,0,0.35))`;
+      const css = [];
+      css.push(`/* CSS generado para .login-card */`);
+      css.push(`.login-card {`);
+      css.push(`  background: ${bg};`);
+      css.push(`  color: ${ui.textColor.value};`);
+      css.push(`  padding: ${ui.compPadding.value}px;`);
+      css.push(`  border: ${ui.compBorderW.value}px ${ui.compBorderStyle.value} ${ui.compBorderColor.value};`);
+      css.push(`  border-radius: ${ui.compRadius.value}px;`);
+      const inset = ui.compShadowInset.checked ? 'inset ' : '';
+      css.push(`  box-shadow: ${inset}0 ${ui.compShadowY.value}px ${ui.compShadowBlur.value}px ${ui.compShadowColor.value};`);
+      css.push(`  opacity: ${ui.compOpacity.value};`);
+      css.push(`  width: ${ui.compWidth.value}px;`);
+      css.push(`  max-width: ${ui.compMaxW.value}%;`);
+      css.push(`  transform: rotate(${ui.compRotate.value}deg) scale(${ui.compScale.value});`);
+      css.push(`  filter: ${ui.compFilter.value};`);
+      css.push(`  transition: ${ui.compTransition.value};`);
+      css.push(`  font-family: ${ui.compFont.value};`);
+      css.push(`  font-size: ${ui.compFontSize.value}px;`);
+      css.push(`  letter-spacing: ${ui.compLetter.value}px;`);
+      css.push(`  text-shadow: ${ui.compTextShadow.value};`);
+      css.push(`}`);
+      css.push(``);
+      css.push(`.login-card input {`);
+      css.push(`  background: ${ui.inputBg.value};`);
+      css.push(`  border: ${ui.inputBorderW.value}px solid ${ui.inputBorderColor.value};`);
+      css.push(`  border-radius: ${ui.inputRadius.value}px;`);
+      css.push(`  padding: 10px;`);
+      css.push(`}`);
+      css.push(`.login-card input::placeholder { color: rgba(255,255,255,0.35); }`);
+      css.push(``);
+      css.push(`.login-card .btn-primary { /* botón dentro de login */ }`);
+      // añadir boton generado (llamaremos a la función que genera boton)
+      const btnCssSnippet = buildBtnCssString('.login-card .btn-primary');
+      css.push(btnCssSnippet);
+
+      ui.loginCss.textContent = css.join('\n');
+    }
+
+    function buildBtnCssString(selector = '.btn-primary'){
+      const arr = [];
+      arr.push(`${selector} {`);
+      arr.push(`  background: ${ui.btnBg.value};`);
+      arr.push(`  color: ${ui.btnColor.value};`);
+      arr.push(`  padding: ${ui.btnPadY.value}px ${ui.btnPadX.value}px;`);
+      arr.push(`  border-radius: ${ui.btnRadius.value}px;`);
+      arr.push(`  border: ${ui.btnBorderW.value}px ${ui.btnBorderStyle.value} ${ui.btnBorderColor.value};`);
+      arr.push(`  text-transform: ${ui.btnTransform.value};`);
+      arr.push(`  letter-spacing: ${ui.btnLetter.value}px;`);
+      arr.push(`  font-weight: 600;`);
+      arr.push(`  cursor: pointer;`);
+      arr.push(`  transition: all 220ms ease;`);
+      arr.push(`}`);
+      arr.push(``);
+      // hover variants
+      const hover = ui.btnHover.value;
+      if(hover === 'lift'){
+        arr.push(`${selector}:hover { transform: translateY(-6px); }`);
+      } else if(hover === 'grow'){
+        arr.push(`${selector}:hover { transform: scale(1.05); }`);
+      } else if(hover === 'glow'){
+        arr.push(`${selector}:hover { box-shadow: 0 8px 30px ${ui.btnBg.value}66; }`);
+      } else if(hover === 'invert'){
+        arr.push(`${selector}:hover { filter: invert(1); }`);
+      }
+      return arr.join('\n');
+    }
+
+    function generateBtnCss(){
+      const css = [];
+      css.push(`/* CSS generado para .btn-primary */`);
+      css.push(buildBtnCssString('.btn-primary'));
+      ui.btnCss.textContent = css.join('\n');
+    }
+
+    // copiar al portapapeles botones
+    ui.copyLoginCss.addEventListener('click', ()=> {
+      navigator.clipboard.writeText(ui.loginCss.textContent).then(()=> {
+        ui.copyLoginCss.textContent = 'Copiado!';
+        setTimeout(()=> ui.copyLoginCss.textContent = 'Copiar CSS Login', 900);
+      });
+    });
+    ui.copyBtnCss.addEventListener('click', ()=> {
+      navigator.clipboard.writeText(ui.btnCss.textContent).then(()=> {
+        ui.copyBtnCss.textContent = 'Copiado!';
+        setTimeout(()=> ui.copyBtnCss.textContent = 'Copiar CSS Botón', 900);
+      });
+    });
+
+    // copyAll combina ambos CSS
+    ui.copyAll.addEventListener('click', ()=>{
+      const combined = ui.loginCss.textContent + '\n\n' + ui.btnCss.textContent;
+      navigator.clipboard.writeText(combined).then(()=>{
+        ui.copyAll.textContent = 'Copiado!';
+        setTimeout(()=> ui.copyAll.textContent = 'Copiar CSS combinando', 900);
+      });
+    });
+
+    // descargar CSS como archivo
+    function downloadText(filename, text){
+      const blob = new Blob([text], {type:'text/css'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    }
+    ui.downloadLoginCss.addEventListener('click', ()=> downloadText('login-card.css', ui.loginCss.textContent));
+    ui.downloadBtnCss.addEventListener('click', ()=> downloadText('btn-primary.css', ui.btnCss.textContent));
+
+    // inicializar con valores por defecto
+    function init(){
+      highlightActiveEditor();
+      updateLogin();
+      updateButton();
+      generateLoginCss();
+      generateBtnCss();
+    }
+    init();
+
+    // actualizar a intervalos para captar cambios que no disparan eventos (seguridad)
+    setInterval(()=>{ updateFocused(); }, 500);
+
+    // accesibilidad: permitir doble click en preview para editar texto rapido
+    ui.previewLogin.addEventListener('dblclick', ()=>{
+      const newTitle = prompt('Editar título del login', ui.loginTitle.value);
+      if(newTitle !== null) ui.loginTitle.value = newTitle;
+      const newDesc = prompt('Editar descripción', ui.loginDesc.value);
+      if(newDesc !== null) ui.loginDesc.value = newDesc;
+      updateFocused();
+    });
+
+    // tecla C copia CSS combinado (Ctrl/Cmd + C) cuando se presiona con Alt
+    window.addEventListener('keydown', (e)=>{
+      if((e.ctrlKey || e.metaKey) && e.altKey && e.key.toLowerCase() === 'c'){
+        ui.copyAll.click();
+      }
+    });
+
+    // botón de pruebas rápidas: permitir que el usuario haga click y obtener CSS actual
+    ui.previewBtn.addEventListener('click', ()=> alert('Botón de prueba — tu CSS actual está en el recuadro "CSS generado — Botón".'));
+  </script>
+</body>
+</html>
